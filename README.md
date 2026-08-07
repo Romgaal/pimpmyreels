@@ -11,7 +11,17 @@ grows every time someone makes a reel.
 
 ---
 
-## Quickstart
+## Install it in one sentence
+
+Paste this to Claude Code:
+
+> installe https://github.com/Romgaal/pimpmyreels
+
+It reads `CLAUDE.md` in this repo and does the rest: registers the plugin, installs
+ffmpeg / whisper.cpp / the model / Node / Remotion, and creates the folders. You then
+restart the conversation and type `/pimp`.
+
+Manual equivalent:
 
 ```
 /plugin marketplace add Romgaal/pimpmyreels
