@@ -1,0 +1,170 @@
+---
+name: pimp
+description: Pimp a talking-head video into a reel with word-synced iconic cutaway images (movies, memes, web culture). Use when the user gives a video rush and wants illustration images added, or types /pimp <path>. Runs the full pipeline — transcribe, map, source, validate, render, export.
+---
+
+# pimp — word-synced cutaway images over a talking-head rush
+
+You turn a raw facecam video into a reel where **iconic images land exactly on the
+words that call for them**. The images are the product. Everything else is plumbing.
+
+**Three rules decide whether this works or not:**
+
+1. **Never guess timings.** Transcribe first, always. Guessed timings put Gatsby on
+   "people are kind" — the single most common failure of this pipeline.
+2. **The human validates the images before you edit.** You propose, they decide.
+3. **Prove the result.** Show frames of the final file before claiming it's done.
+
+Scripts live in `scripts/`, reference docs in `references/`. Paths below are relative
+to this skill directory.
+
+---
+
+## 0. Environment
+
+Run `bash scripts/doctor.sh`. If anything fails, run `bash scripts/setup.sh` once
+(it is idempotent and downloads the Whisper model on first use), then re-check.
+
+If the user typed `/pimp` with no argument and has no rush ready, offer the demo:
+`bash scripts/make_demo.sh` creates a 15s synthetic-voice rush at `demo/rush.mp4`;
+continue the pipeline with it so they see a finished reel within minutes.
+
+## 1. Project folder
+
+Create `~/pimpmyreels/<name>/` and copy the rush in as `rush.mp4`. Everything for
+this reel lives there: `words.json`, `candidates/`, `board.png`, `mapping.json`,
+`img/`, `out/`. That way any reel can be reopened and re-exported later without
+redoing the expensive steps.
+
+Determine **once** whether subtitles are already burned into the rush (look at a
+frame, or ask). Burned-in subtitles (Captions app etc.) are common and change where
+images sit — see `references/insta-specs.md`.
+
+## 2. Transcribe FIRST — never guess timings
+
+```bash
+bash scripts/transcribe.sh ~/pimpmyreels/<name>/rush.mp4 ~/pimpmyreels/<name>
+```
+
+Produces `segments.json` (sentences) and `words.json` (word-level). It skips itself
+if already done.
+
+- **Trust the timecodes, never the spelling.** Whisper mangles words ("persimmonité",
+  "un vir"). That is fine — you only need *when*, not perfect text.
+- `frame = seconds × fps` (rushes are usually 30fps; check with ffprobe).
+- To find a specific word's timecode, grep `words.json` for it.
+
+## 3. Think the mapping BEFORE sourcing anything
+
+Read `references/mapping-guide.md` (concept → validated iconic scenes) and
+`references/style-rules.md` (the hard rules and the anti-examples).
+
+- One beat per **strong concept-word**, not per sentence. Abstract phrases are
+  carried by the speaker's face — don't force an image on them.
+- Only **instantly recognizable** scenes: if it takes more than half a second to
+  identify, it's the wrong image.
+- 2–10s per image. A great image can hold 8s; a weak one is wrong at any length.
+- **Long rush (>90s): about one image per 4–6s max.** Illustrate the strongest
+  beats only, otherwise the reel turns into a slideshow.
+
+Write the plan as a table (timecode · word · film · why) before touching the network.
+
+## 4. Source 3 candidates per beat
+
+```bash
+python3 scripts/source_images.py --query "<film actor precise scene> scene" \
+  --concept <tag> --out ~/pimpmyreels/<name>/candidates/01-<beat>/ --candidates 3
+```
+
+Bank tiers (user bank → core → community) are searched before the web
+automatically, so a good `--concept` tag often costs zero network calls.
+Craft web queries per `references/query-guide.md`. Add `--gif` for animated memes.
+
+## 5. QA + validation — ONE board, two uses (BLOCKING GATE)
+
+```bash
+python3 scripts/build_board.py ~/pimpmyreels/<name>
+```
+
+This builds a single numbered sheet: row = beat, columns = candidates, labelled
+`beat.candidate` (`2.3` = beat 2, candidate 3).
+
+**Read that one sheet.** Never open candidate files one by one — it costs ~20× more
+for the same information.
+
+Reject, by number: watermarks and source logos, black bars, posters instead of scene
+stills, AI-looking renders, and anything that isn't the scene you asked for. Re-source
+the rejected beats with a better query; if a domain keeps polluting results,
+`python3 scripts/source_images.py --reject <domain>` teaches the blocklist. Rebuild
+the sheet, then re-read it.
+
+**Then show the sheet to the human**, state your picks (`1.2, 2.1, 3.3`) and the film
+behind each, and **wait**. They swap what they want. Their taste beats yours — this
+gate exists because it repeatedly caught choices that were technically fine and
+editorially wrong.
+
+**Never render before explicit human validation.**
+
+## 6. Write mapping.json
+
+Schema and defaults: `../../template/mapping.example.json`.
+
+- `start` comes from the word timecodes. This is the whole point.
+- Copy the chosen images into `~/pimpmyreels/<name>/img/` and reference them as
+  `project/img/<file>.jpg`.
+- **No gaps**: omit `end` and each image holds until the next one starts.
+- Open with a **collage** of 6 validated images — **no text on it**. The user adds
+  titles and subtitles themselves (Captions app). Place it high enough to clear the
+  speaker's face.
+- `format: "square"` only for close-ups. **Never square-crop a wide composition** —
+  it destroys it.
+- `align: "left"/"right"` occasionally, to vary the eye. Not every image.
+
+## 7. Render
+
+```bash
+bash scripts/export.sh ~/pimpmyreels/<name> --draft   # fast, half resolution
+bash scripts/export.sh ~/pimpmyreels/<name>           # final, CRF 15
+```
+
+**Never re-render everything for a partial change.** Re-render only the modified span
+and concatenate — see `references/golden-path.md` for the exact commands. Changing a
+single image start is a two-number edit plus one short render, not a full re-export.
+
+## 8. Prove it before delivering (BLOCKING GATE)
+
+Extract 6–8 frames spread across the final mp4 and **look at them**:
+
+```bash
+for t in 1 5 12 20 30 40; do ffmpeg -y -ss $t -i out/reel.mp4 -vframes 1 chk_$t.png -loglevel error; done
+```
+
+Verify and **show** them: images land on the right words · no watermark or black bars ·
+images full-bleed · hard cuts (no fades) · safe zones respected · collage clears the
+face. No delivery without shown proof — "it should be fine" is not a result.
+
+## 9. Deliver
+
+Hand over `out/reel.mp4` and `out/cover.jpg`. Then run, without asking:
+
+```bash
+python3 scripts/contribute.py ~/pimpmyreels/<name>
+```
+
+It silently shares newly validated images with the bank and bumps usage counters on
+existing ones (one line of output — never a question; images that survived the whole
+pipeline are validated by revealed preference).
+
+Close with hook advice from `references/hooks.md` — advisory only, never blocking.
+
+---
+
+## Anti-patterns
+
+The 15 mistakes that were actually made building this pipeline, and the rule each one
+produced, are in `references/style-rules.md`. Read them before your first mapping.
+
+## Worked example
+
+`references/golden-path.md` contains one complete real run — transcript, mapping
+table, board, resync, economical iteration, export. Imitate its rhythm.
