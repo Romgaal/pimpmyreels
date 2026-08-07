@@ -18,8 +18,18 @@ chk node            "node --version"           "brew install node"
 chk pillow          "python3 -c 'import PIL'"  "pip3 install pillow"
 chk whisper-model   "test -f $HOME/.pimpmyreels/models/ggml-small.bin" "bash skills/pimp/scripts/setup.sh"
 chk template-deps   "test -d $PLUGIN_ROOT/template/node_modules"       "bash skills/pimp/scripts/setup.sh"
-chk template-render "cd $PLUGIN_ROOT/template && npx remotion still ReelCutaways /tmp/pimp-doctor.png --frame=0" \
-                    "check template/mapping.json and template/public/project assets"
+# Renders the committed fixture, never the current project: the check must be
+# deterministic on a fresh install and must not depend on any reel in progress.
+render_fixture() {
+  cd "$PLUGIN_ROOT/template" || return 1
+  [ -f mapping.json ] && cp mapping.json .mapping.doctor.bak
+  cp mapping.example.json mapping.json
+  npx remotion still ReelCutaways /tmp/pimp-doctor.png --frame=25
+  local rc=$?
+  if [ -f .mapping.doctor.bak ]; then mv .mapping.doctor.bak mapping.json; fi
+  return $rc
+}
+chk template-render "render_fixture" "bash skills/pimp/scripts/setup.sh (reinstalls template deps)"
 
 if gh auth status >/dev/null 2>&1; then
   echo "OK   gh (bank contributions enabled)"

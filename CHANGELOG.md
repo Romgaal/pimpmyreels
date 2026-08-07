@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.1 — fresh-install fix
+
+- **Fix**: `doctor.sh` failed `template-render` on every fresh install. It rendered the
+  current `mapping.json`, which points at project assets that do not exist yet (they
+  are gitignored). Found by an end-to-end install test — a locally-dirty dev machine
+  could never reproduce it.
+- A tiny fixture (36KB: 2s clip + 6 thumbnails) is now committed, `mapping.example.json`
+  points at it, and doctor renders **that**, restoring any in-progress project mapping
+  afterwards. The check is deterministic and actually exercises the Remotion chain.
+
 ## 0.2.0 — variety
 
 - **Anti-sameness**: only 1 of 3 candidates now comes from the banks (`--bank-max`,
