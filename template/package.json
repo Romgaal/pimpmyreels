@@ -1,0 +1,15 @@
+{
+  "name": "pimpmyreels-template",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.488",
+    "@remotion/gif": "4.0.488",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.488"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "rush": "project/rush.mp4",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 450,
+  "subtitlesBurned": false,
+  "imageTop": 118,
+  "segments": [
+    {
+      "start": 0,
+      "type": "collage",
+      "images": [
+        "project/img/a.jpg",
+        "project/img/b.jpg",
+        "project/img/c.jpg",
+        "project/img/d.jpg",
+        "project/img/e.jpg",
+        "project/img/f.jpg"
+      ]
+    },
+    { "start": 60, "image": "project/img/a.jpg", "format": "landscape", "align": "center" },
+    { "start": 180, "image": "project/img/b.jpg", "format": "square", "align": "right", "end": 300 }
+  ]
+}
