@@ -28,6 +28,8 @@ EXCLUDE = {
     'valeur/timide-1': 'wrong register', 'valeur/timide-2': 'wrong register',
     'valeur/timide-3': 'wrong register',
     'films/oser-1': 'too weak, not instantly readable', 'films/oser-2': 'too weak',
+    'radar/rencontre-1': 'Titanic + Alamy watermark — rejected in favour of Walter Mitty',
+    'radar/rencontre-2': 'Titanic + watermark',
 }
 
 # CORE: file -> (film, [concepts], universal)
@@ -53,7 +55,6 @@ CORE = {
     'radar/mitty-longboard-1': ('The Secret Life of Walter Mitty', ['adventure', 'freedom'], True),
     'radar/iceberg-clean': ('iceberg', ['hidden', 'potential'], True),
     'radar/espoir-1': ('The Shawshank Redemption', ['hope', 'freedom'], True),
-    'radar/rencontre-1': ('Forrest Gump', ['meeting', 'strangers'], True),
     'valeur/hero-1': ('Iron Man', ['hero', 'extraordinary'], True),
     'valeur/capacites-2': ('Sherlock Holmes', ['capacities', 'smart'], True),
     'valeur/cool-2': ('James Bond', ['cool', 'class'], True),
