@@ -28,6 +28,18 @@ Manual equivalent:
 /plugin install pimpmyreels@pimpmyreels
 ```
 
+
+> **Claude Code Desktop?** `/plugin` only exists in the terminal version. Use the CLI
+> instead — same result:
+> ```bash
+> claude plugin marketplace add Romgaal/pimpmyreels
+> claude plugin install pimpmyreels@pimpmyreels
+> ```
+> To update later (refresh the marketplace **first**, it is cached):
+> ```bash
+> claude plugin marketplace update pimpmyreels && claude plugin update pimpmyreels@pimpmyreels
+> ```
+
 Restart the conversation, then:
 
 ```

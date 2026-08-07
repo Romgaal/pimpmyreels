@@ -9,10 +9,17 @@
 /plugin install pimpmyreels@pimpmyreels
 ```
 
+If the slash commands are not available (Claude Code Desktop), use the CLI — same effect:
+
+```bash
+claude plugin marketplace add Romgaal/pimpmyreels
+claude plugin install pimpmyreels@pimpmyreels
+```
+
 Then tell the user: **"Restart this conversation, then type `/pimp`."** The plugin's
 skills are only loaded at conversation start — this step is not optional.
 
-## 2. If slash commands are unavailable in this environment
+## 2. If neither slash commands nor the CLI are available
 
 Install everything manually, then hand over:
 

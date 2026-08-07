@@ -12,6 +12,13 @@ Dans Claude Code, tape :
 /plugin install pimpmyreels@pimpmyreels
 ```
 
+Sur **Claude Code Desktop**, `/plugin` n'existe pas — utilise la CLI, c'est pareil :
+
+```bash
+claude plugin marketplace add Romgaal/pimpmyreels
+claude plugin install pimpmyreels@pimpmyreels
+```
+
 Puis **redémarre la conversation** (le plugin se charge au démarrage).
 
 ### 2. Premier lancement
@@ -41,6 +48,15 @@ Il monte et t'exporte `reel.mp4` (+ la miniature `cover.jpg`).
 
 Le reel sort **sans texte**, exprès. Tu ajoutes titre et sous-titres avec ton outil
 habituel (Captions, CapCut…). Le style et la typo restent à toi.
+
+### Mettre à jour plus tard
+
+Le marketplace est mis en cache : rafraîchis-le **avant** le plugin, sinon il te dira
+que tu es déjà à jour.
+
+```bash
+claude plugin marketplace update pimpmyreels && claude plugin update pimpmyreels@pimpmyreels
+```
 
 ### 5. Ajuster
 
