@@ -26,6 +26,19 @@ its model (465MB, once), Node, the Remotion template and its dependencies, Pillo
 and the working folders. Then follow `~/.pimpmyreels/repo/skills/pimp/SKILL.md`
 manually for the pipeline.
 
+
+## What setup reuses vs installs
+
+`setup.sh` never reinstalls or upgrades what the machine already has. It prints, line
+by line, what it reuses and what it fetches. Typical run on a developer machine:
+everything reused except the template's dependencies.
+
+**One deliberate exception**: the Remotion template gets its own isolated dependency
+copy, even if the user already has Remotion projects. Theirs may force a different
+codec (a ProRes config would turn a 42s reel into a 3GB file), register other
+compositions, or be work in progress. pimpmyreels never touches an existing project.
+Cost: about 15 seconds and 200MB, once.
+
 ## 3. Nothing else is required from the user
 
 No API keys. No accounts. Transcription runs locally. The first `/pimp` runs
