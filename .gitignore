@@ -6,3 +6,4 @@ out/
 template/public/project/
 template/mapping.json
 demo/rush.mp4
+__pycache__/
