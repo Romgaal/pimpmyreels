@@ -1,0 +1,23 @@
+# Domains that ship watermarks, stock overlays or non-scene material.
+# Learned rejections are appended to ~/.pimpmyreels/blocklist-learned.txt
+alamy
+shutterstock
+gettyimages
+istock
+dreamstime
+123rf
+depositphotos
+stockphoto
+movieclips
+fandango
+ytimg
+youtube
+redbubble
+ebay
+poster
+imdb-
+soundcy
+vecteezy
+clips4u
+mylionking
+watermark
