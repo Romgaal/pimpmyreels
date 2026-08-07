@@ -1,0 +1,8 @@
+node_modules/
+out/
+*.mov
+*.wav
+.DS_Store
+template/public/project/
+template/mapping.json
+demo/rush.mp4

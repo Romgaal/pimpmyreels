@@ -1,0 +1,17 @@
+{
+  "name": "pimpmyreels",
+  "metadata": {
+    "description": "Pimp your talking-head reels: word-synced iconic movie stills and memes, sourced and edited automatically. /pimp does it all."
+  },
+  "owner": { "name": "Romain Gal", "email": "ro@romaingal.com" },
+  "plugins": [
+    {
+      "name": "pimpmyreels",
+      "description": "Word-synced cutaway images (iconic films, memes, web culture) over your facecam rush. Whisper transcription, curated image bank, human validation board, Remotion render.",
+      "author": { "name": "Romain Gal", "email": "ro@romaingal.com" },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Romgaal/pimpmyreels"
+    }
+  ]
+}
