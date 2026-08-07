@@ -1,11 +1,25 @@
 {
   "name": "pimpmyreels",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Pimp your reels: Whisper word-level sync, iconic-scene sourcing with a curated community bank, human validation board, Remotion render. Ships /pimp and /pimp-calibrate.",
-  "author": { "name": "Romain Gal", "email": "ro@romaingal.com" },
+  "author": {
+    "name": "Romain Gal",
+    "email": "ro@romaingal.com"
+  },
   "homepage": "https://github.com/Romgaal/pimpmyreels",
   "repository": "https://github.com/Romgaal/pimpmyreels",
   "license": "MIT",
-  "keywords": ["reel", "instagram", "tiktok", "remotion", "whisper", "cutaway", "b-roll", "memes", "video-editing", "shorts"],
+  "keywords": [
+    "reel",
+    "instagram",
+    "tiktok",
+    "remotion",
+    "whisper",
+    "cutaway",
+    "b-roll",
+    "memes",
+    "video-editing",
+    "shorts"
+  ],
   "skills": "./skills/"
 }

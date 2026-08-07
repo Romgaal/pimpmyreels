@@ -66,6 +66,16 @@ Read `references/mapping-guide.md` (concept → validated iconic scenes) and
 - 2–10s per image. A great image can hold 8s; a weak one is wrong at any length.
 - **Long rush (>90s): about one image per 4–6s max.** Illustrate the strongest
   beats only, otherwise the reel turns into a slideshow.
+- **Make this reel unique.** The bank is a quality standard, not a shopping list. If
+  the user already has reels, do not reuse the same still for the same idea — the
+  alternates table in `mapping-guide.md` exists for that, and the engine surfaces
+  fresh candidates first. Two reels that look alike is a failure, even if each one is
+  individually fine.
+- **Stay current.** Include **1–2 references from the last 2–3 years** when the topic
+  allows (recent series, films, memes actually circulating), on top of the timeless
+  classics. Ask the user what they're watching if you're unsure.
+- **Consider gifs** for reaction beats (`--gif`): panic, "no no no", "just do it".
+  One or two per reel, never more.
 
 Write the plan as a table (timecode · word · film · why) before touching the network.
 
@@ -76,8 +86,12 @@ python3 scripts/source_images.py --query "<film actor precise scene> scene" \
   --concept <tag> --out ~/pimpmyreels/<name>/candidates/01-<beat>/ --candidates 3
 ```
 
-Bank tiers (user bank → core → community) are searched before the web
-automatically, so a good `--concept` tag often costs zero network calls.
+By default **only 1 of the 3 candidates comes from the banks** (freshest first, across
+all tiers — an unused community still outranks a core one you already used); the other
+2 are sourced fresh from the web. That is deliberate: it keeps every reel visually
+different while the bank keeps the quality bar. `--bank-max 3` forces bank-only
+(useful offline), `--bank-max 0` forces all-fresh.
+
 Craft web queries per `references/query-guide.md`. Add `--gif` for animated memes.
 
 ## 5. QA + validation — ONE board, two uses (BLOCKING GATE)

@@ -18,6 +18,8 @@ tried and rejected on real reels.
 | **Left/right offsets sparingly.** Most images centered. | Occasional offset catches the eye; constant offset is noise. |
 | **Duration 2–10s.** A strong image can hold 8s. | Length is not the problem — a weak image is wrong at any duration. |
 | **Bank images get the same visual QA as scraped ones.** | The community tier is not curated. Look before you use. |
+| **Never make the same reel twice.** Rotate references across reels; don't reuse a still for the same idea. | The bank makes reels consistent — and, unchecked, identical. Variety is the whole point of a *personal* visual identity. |
+| **1–2 current references per reel** (last 2–3 years) alongside the classics. | Only-classics reads as dated; only-current reads as disposable. |
 
 ## Anti-examples — real mistakes, and the rule each produced
 

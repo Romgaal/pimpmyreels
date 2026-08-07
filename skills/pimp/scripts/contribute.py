@@ -17,15 +17,43 @@ HOME = os.path.expanduser('~/.pimpmyreels')
 CLONE = os.path.join(HOME, 'contrib')
 REPO = 'https://github.com/Romgaal/pimpmyreels.git'
 
+proj = sys.argv[1]
+mapping = json.load(open(os.path.join(proj, 'mapping.json')))
+sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()[:16]
+
+
+def project_images():
+    for seg in mapping['segments']:
+        for img in ([seg['image']] if seg.get('image') else seg.get('images', [])):
+            p = os.path.join(proj, img.replace('project/', ''))
+            if os.path.exists(p):
+                yield img, p
+
+
+# --- Always mark what was used: this is what keeps the next reels visually fresh. ---
+used_path = os.path.join(HOME, 'used.json')
+try:
+    used = json.load(open(used_path))
+except Exception:
+    used = {}
+today = datetime.date.today().isoformat()
+for _, p in project_images():
+    h = sha(p)
+    e = used.setdefault(h, {'count': 0, 'last': ''})
+    e['count'] += 1
+    e['last'] = today
+os.makedirs(HOME, exist_ok=True)
+json.dump(used, open(used_path, 'w'), indent=1)
+
 try:
     cfg = json.load(open(os.path.join(HOME, 'config.json')))
 except Exception:
     cfg = {}
 if cfg.get('contribution', 'auto') != 'auto':
-    print('contribution off')
+    print(f'usage recorded ({len(used)} images known) — contribution off')
     sys.exit(0)
 if subprocess.run(['gh', 'auth', 'status'], capture_output=True).returncode != 0:
-    print('contribution skipped (gh not authenticated)')
+    print('usage recorded — contribution skipped (gh not authenticated)')
     sys.exit(0)
 
 
@@ -45,10 +73,6 @@ if not os.path.isdir(os.path.join(CLONE, '.git')):
 run('git', 'checkout', 'main', ok=False)
 run('git', 'pull', '--ff-only', ok=False)
 
-proj = sys.argv[1]
-mapping = json.load(open(os.path.join(proj, 'mapping.json')))
-sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()[:16]
-
 known = {}
 for tier in ('core', 'community'):
     mp = os.path.join(CLONE, 'bank', tier, 'manifest.json')
@@ -62,27 +86,25 @@ comm_mp = os.path.join(comm_dir, 'manifest.json')
 comm = json.load(open(comm_mp)) if os.path.exists(comm_mp) else []
 
 new, bumped = [], 0
-for seg in mapping['segments']:
-    for img in ([seg['image']] if seg.get('image') else seg.get('images', [])):
-        p = os.path.join(proj, img.replace('project/', ''))
-        if not os.path.exists(p) or p.lower().endswith('.gif'):
-            continue
-        h = sha(p)
-        if h in known:
-            known[h][1]['use_count'] = known[h][1].get('use_count', 0) + 1
-            bumped += 1
-        else:
-            fn = f'{h}.jpg'
-            shutil.copy(p, os.path.join(comm_dir, fn))
-            e = {
-                'file': fn, 'hash': h,
-                'concepts': [os.path.basename(os.path.dirname(img)) or 'misc'],
-                'film': 'unknown', 'universal': False, 'use_count': 1,
-                'added': datetime.date.today().isoformat(),
-            }
-            comm.append(e)
-            known[h] = ('community', e)
-            new.append(fn)
+for img, p in project_images():
+    if p.lower().endswith('.gif'):
+        continue
+    h = sha(p)
+    if h in known:
+        known[h][1]['use_count'] = known[h][1].get('use_count', 0) + 1
+        bumped += 1
+    else:
+        fn = f'{h}.jpg'
+        shutil.copy(p, os.path.join(comm_dir, fn))
+        e = {
+            'file': fn, 'hash': h,
+            'concepts': [os.path.basename(os.path.dirname(img)) or 'misc'],
+            'film': 'unknown', 'universal': False, 'use_count': 1,
+            'added': today,
+        }
+        comm.append(e)
+        known[h] = ('community', e)
+        new.append(fn)
 
 json.dump(comm, open(comm_mp, 'w'), indent=1, ensure_ascii=False)
 core_mp = os.path.join(CLONE, 'bank', 'core', 'manifest.json')

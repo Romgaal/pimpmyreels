@@ -32,6 +32,21 @@ def learn(domain):
         f.write(domain.strip().lower() + '\n')
 
 
+def sha(path):
+    return hashlib.sha256(open(path, 'rb').read()).hexdigest()[:16]
+
+
+def used_hashes():
+    """Images already used in previous reels: {hash: {count, last}}. Drives variety."""
+    p = os.path.join(HOME, 'used.json')
+    if os.path.exists(p):
+        try:
+            return json.load(open(p))
+        except Exception:
+            return {}
+    return {}
+
+
 def fetch(url, timeout=20):
     return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout).read()
 
@@ -59,28 +74,52 @@ def letterbox(im):
     return bm(0, b) < 20 and bm(h - b, h) < 20 and bm(int(h * 0.42), int(h * 0.58)) > bm(0, b) + 28
 
 
-def from_dir(d, concept, out, n, tier):
-    """Pull from a bank tier. Uses manifest.json concepts, or filename match for the user bank."""
-    got = []
+def collect(d, concept, tier):
+    """List matching candidates in one bank tier as (src, hash, tier). No copying."""
+    out = []
     man = os.path.join(d, 'manifest.json')
     if os.path.exists(man):
         for e in json.load(open(man)):
-            if len(got) >= n:
-                break
             if concept.lower() in [c.lower() for c in e.get('concepts', [])]:
                 src = os.path.join(d, e['file'])
                 if os.path.exists(src):
-                    dst = os.path.join(out, f'{tier}-{len(got)+1}{os.path.splitext(src)[1]}')
-                    shutil.copy(src, dst)
-                    got.append({'path': dst, 'source': f'{tier}:{e["file"]}'})
+                    out.append((src, e.get('hash') or sha(src), tier))
     elif os.path.isdir(d):
         for f in sorted(os.listdir(d)):
-            if len(got) >= n:
-                break
             if concept.lower() in f.lower() and f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                dst = os.path.join(out, f'{tier}-{len(got)+1}{os.path.splitext(f)[1]}')
-                shutil.copy(os.path.join(d, f), dst)
-                got.append({'path': dst, 'source': f'{tier}:{f}'})
+                src = os.path.join(d, f)
+                out.append((src, sha(src), tier))
+    return out
+
+
+TIER_RANK = {'mybank': 0, 'core': 1, 'community': 2}
+
+
+def from_bank(concept, out, n, used):
+    """Pick from ALL bank tiers at once, freshest first.
+
+    Ordering is global on purpose: an unused community still beats a core still that
+    was already used in a previous reel. Variety across reels is the goal; tier only
+    breaks ties.
+    """
+    cands = collect(os.path.join(HOME, 'mybank'), concept, 'mybank')
+    for tier in ('core', 'community'):
+        cands += collect(os.path.join(PLUGIN_ROOT, 'bank', tier), concept, tier)
+
+    cands.sort(key=lambda c: (
+        used.get(c[1], {}).get('count', 0),
+        TIER_RANK.get(c[2], 9),
+        used.get(c[1], {}).get('last', ''),
+    ))
+
+    got = []
+    for src, h, tier in cands[:n]:
+        dst = os.path.join(out, f'{tier}-{len(got)+1}{os.path.splitext(src)[1]}')
+        shutil.copy(src, dst)
+        got.append({
+            'path': dst, 'source': f'{tier}:{os.path.basename(src)}',
+            'hash': h, 'used_before': used.get(h, {}).get('count', 0),
+        })
     return got
 
 
@@ -136,6 +175,10 @@ if __name__ == '__main__':
     ap.add_argument('--concept', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--candidates', type=int, default=3)
+    ap.add_argument('--bank-max', type=int, default=1,
+                    help='max candidates taken from the banks (default 1). The rest come '
+                         'from the web, so every board offers fresh options. Use '
+                         '--bank-max 3 to work offline from the bank only.')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
     a = ap.parse_args()
@@ -146,11 +189,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     os.makedirs(a.out, exist_ok=True)
-    res = from_dir(os.path.join(HOME, 'mybank'), a.concept, a.out, a.candidates, 'mybank')
-    for tier in ('core', 'community'):
-        if len(res) < a.candidates:
-            res += from_dir(os.path.join(PLUGIN_ROOT, 'bank', tier), a.concept, a.out,
-                            a.candidates - len(res), tier)
+    used = used_hashes()
+    bank_budget = min(a.bank_max, a.candidates)
+
+    res = from_bank(a.concept, a.out, bank_budget, used)
     if len(res) < a.candidates:
         res += scrape(a.query, a.out, a.candidates - len(res), a.gif)
+    # Last resort: web gave nothing (offline, blocked) — fill up from the bank.
+    if len(res) < a.candidates:
+        have = {r.get('hash') for r in res}
+        for extra in from_bank(a.concept, a.out, a.candidates, used):
+            if len(res) >= a.candidates:
+                break
+            if extra.get('hash') not in have:
+                res.append(extra)
     print(json.dumps(res, indent=1))
