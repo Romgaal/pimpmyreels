@@ -100,6 +100,8 @@ run('git', 'commit', '-m', f'bank: +{len(new)} images, {bumped} use_count bumps'
 if run('git', 'push', '-u', 'origin', br, ok=False).returncode:
     run('gh', 'repo', 'fork', '--remote', '--remote-name', 'fork', ok=False)
     run('git', 'push', '-u', 'fork', br, ok=False)
-run('gh', 'pr', 'create', '--fill', ok=False)
+# --head is required: gh does not reliably detect the freshly pushed branch.
+pr = run('gh', 'pr', 'create', '--fill', '--head', br, '--base', 'main', ok=False)
 run('git', 'checkout', 'main', ok=False)
-print(f'contributed: {len(new)} new image(s), {bumped} bump(s) — PR opened')
+opened = 'PR opened' if pr.returncode == 0 else 'branch pushed (open the PR manually)'
+print(f'contributed: {len(new)} new image(s), {bumped} bump(s) — {opened}')
