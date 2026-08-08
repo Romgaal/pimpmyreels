@@ -9,6 +9,12 @@ Runs in a SEPARATE clone (~/.pimpmyreels/contrib) so it can never conflict with
 worth sharing: no question is asked. Known images get a use_count bump instead,
 which is what drives curation (community -> core).
 
+Re-run safe: a per-project marker (.contributed.json) records which image hashes
+were already processed, so iterating on a reel (swap -> re-export -> re-deliver)
+only contributes the DELTA — counters stay honest, no duplicate PRs. The marker
+covers usage recording and contribution together (KISS): if contribution was off
+or gh missing at the time, those images simply won't be re-proposed later.
+
 Disable with: {"contribution": "off"} in ~/.pimpmyreels/config.json
 """
 import datetime, hashlib, json, os, shutil, subprocess, sys
@@ -20,40 +26,55 @@ REPO = 'https://github.com/Romgaal/pimpmyreels.git'
 proj = sys.argv[1]
 mapping = json.load(open(os.path.join(proj, 'mapping.json')))
 sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()[:16]
-
-
-def project_images():
-    for seg in mapping['segments']:
-        for img in ([seg['image']] if seg.get('image') else seg.get('images', [])):
-            p = os.path.join(proj, img.replace('project/', ''))
-            if os.path.exists(p):
-                yield img, p
-
-
-# --- Always mark what was used: this is what keeps the next reels visually fresh. ---
-used_path = os.path.join(HOME, 'used.json')
-try:
-    used = json.load(open(used_path))
-except Exception:
-    used = {}
 today = datetime.date.today().isoformat()
-for _, p in project_images():
-    h = sha(p)
+
+
+def load_json(path, default):
+    try:
+        return json.load(open(path))
+    except Exception:
+        return default
+
+
+# --- Collect this reel's images, dedup by hash ---
+items = {}
+for seg in mapping['segments']:
+    for img in ([seg['image']] if seg.get('image') else seg.get('images', [])):
+        p = os.path.join(proj, img.replace('project/', ''))
+        if os.path.exists(p):
+            items[sha(p)] = (img, p)
+
+# --- Delta vs the per-project marker (re-run safety) ---
+marker_path = os.path.join(proj, '.contributed.json')
+marker = set(load_json(marker_path, []))
+delta = {h: v for h, v in items.items() if h not in marker}
+if not delta:
+    print('nothing new for this project (already recorded)')
+    sys.exit(0)
+
+
+def commit_marker():
+    json.dump(sorted(marker | set(delta)), open(marker_path, 'w'))
+
+
+# --- Record usage locally (drives variety across reels) — delta only ---
+used_path = os.path.join(HOME, 'used.json')
+used = load_json(used_path, {})
+for h in delta:
     e = used.setdefault(h, {'count': 0, 'last': ''})
     e['count'] += 1
     e['last'] = today
 os.makedirs(HOME, exist_ok=True)
 json.dump(used, open(used_path, 'w'), indent=1)
 
-try:
-    cfg = json.load(open(os.path.join(HOME, 'config.json')))
-except Exception:
-    cfg = {}
+cfg = load_json(os.path.join(HOME, 'config.json'), {})
 if cfg.get('contribution', 'auto') != 'auto':
-    print(f'usage recorded ({len(used)} images known) — contribution off')
+    commit_marker()
+    print(f'usage recorded ({len(delta)} new) — contribution off')
     sys.exit(0)
 if subprocess.run(['gh', 'auth', 'status'], capture_output=True).returncode != 0:
-    print('usage recorded — contribution skipped (gh not authenticated)')
+    commit_marker()
+    print(f'usage recorded ({len(delta)} new) — contribution skipped (gh not authenticated)')
     sys.exit(0)
 
 
@@ -68,7 +89,8 @@ if not os.path.isdir(os.path.join(CLONE, '.git')):
     os.makedirs(os.path.dirname(CLONE), exist_ok=True)
     subprocess.run(['git', 'clone', '--depth', '20', REPO, CLONE], capture_output=True)
     if not os.path.isdir(os.path.join(CLONE, '.git')):
-        print('contribution skipped (could not clone repo)')
+        commit_marker()
+        print('usage recorded — contribution skipped (could not clone repo)')
         sys.exit(0)
 run('git', 'checkout', 'main', ok=False)
 run('git', 'pull', '--ff-only', ok=False)
@@ -83,13 +105,12 @@ for tier in ('core', 'community'):
 comm_dir = os.path.join(CLONE, 'bank', 'community')
 os.makedirs(comm_dir, exist_ok=True)
 comm_mp = os.path.join(comm_dir, 'manifest.json')
-comm = json.load(open(comm_mp)) if os.path.exists(comm_mp) else []
+comm = load_json(comm_mp, [])
 
 new, bumped = [], 0
-for img, p in project_images():
+for h, (img, p) in delta.items():
     if p.lower().endswith('.gif'):
         continue
-    h = sha(p)
     if h in known:
         known[h][1]['use_count'] = known[h][1].get('use_count', 0) + 1
         bumped += 1
@@ -109,13 +130,15 @@ for img, p in project_images():
 json.dump(comm, open(comm_mp, 'w'), indent=1, ensure_ascii=False)
 core_mp = os.path.join(CLONE, 'bank', 'core', 'manifest.json')
 if os.path.exists(core_mp):
-    json.dump([e for t, e in known.values() if t == 'core'], open(core_mp, 'w'), indent=1, ensure_ascii=False)
+    json.dump([e for t, e in known.values() if t == 'core'], open(core_mp, 'w'),
+              indent=1, ensure_ascii=False)
 
+commit_marker()
 if not new and not bumped:
     print('nothing to contribute')
     sys.exit(0)
 
-br = f"contrib/{os.environ.get('USER', 'user')}-{datetime.date.today().isoformat()}-{os.getpid()}"
+br = f"contrib/{os.environ.get('USER', 'user')}-{today}-{os.getpid()}"
 run('git', 'checkout', '-B', br)
 run('git', 'add', 'bank')
 run('git', 'commit', '-m', f'bank: +{len(new)} images, {bumped} use_count bumps')

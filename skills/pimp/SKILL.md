@@ -121,7 +121,18 @@ editorially wrong.
 
 ## 6. Write mapping.json
 
-Schema and defaults: `../../template/mapping.example.json`.
+**Generate the skeleton first — never hand-write fps or durationInFrames:**
+
+```bash
+bash scripts/init_mapping.sh ~/pimpmyreels/<name>
+```
+
+It probes the rush with ffprobe and writes the correct `fps`, `width`, `height` and
+`durationInFrames` (a wrong fps desyncs every image; a wrong duration cuts the reel
+short). You only fill in `segments`. Do **not** copy `mapping.example.json` — it
+points at the doctor's test fixture, not at your project.
+
+Schema reference: `../../template/mapping.example.json`.
 
 - `start` comes from the word timecodes. This is the whole point.
 - Copy the chosen images into `~/pimpmyreels/<name>/img/` and reference them as
@@ -141,9 +152,17 @@ bash scripts/export.sh ~/pimpmyreels/<name> --draft   # fast, half resolution
 bash scripts/export.sh ~/pimpmyreels/<name>           # final, CRF 15
 ```
 
-**Never re-render everything for a partial change.** Re-render only the modified span
-and concatenate — see `references/golden-path.md` for the exact commands. Changing a
-single image start is a two-number edit plus one short render, not a full re-export.
+**Never re-render everything for a partial change.** If the edit starts at frame N,
+re-render only from there and splice onto the existing export:
+
+```bash
+bash scripts/export.sh ~/pimpmyreels/<name> --from N
+```
+
+The head of `out/reel.mp4` is kept (frame-accurate), only N→end is re-rendered.
+Changing a single image is a two-number edit plus seconds of render, not a full
+re-export. (`--from` needs a previous full export; the manual equivalent lives in
+`references/golden-path.md`.)
 
 ## 8. Prove it before delivering (BLOCKING GATE)
 

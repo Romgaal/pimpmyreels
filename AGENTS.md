@@ -44,7 +44,7 @@ everything reused except the template's dependencies.
 copy, even if the user already has Remotion projects. Theirs may force a different
 codec (a ProRes config would turn a 42s reel into a 3GB file), register other
 compositions, or be work in progress. pimpmyreels never touches an existing project.
-Cost: about 15 seconds and 200MB, once.
+Cost: about 15–60 seconds and ~470MB of disk, once.
 
 ## 3. Nothing else is required from the user
 

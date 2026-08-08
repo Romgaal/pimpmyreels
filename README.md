@@ -116,6 +116,10 @@ promotes an image from `community` to `core`.
 
 Turn it off with `{"contribution": "off"}` in `~/.pimpmyreels/config.json`.
 
+**Honest note on coverage**: the shipped seed leans personal-development / social
+content. Other niches (fitness, business…) start web-first — and build their own
+coverage over time through `~/.pimpmyreels/mybank/` and automatic contributions.
+
 ## Cost
 
 Local transcription is free. The agent spends tokens on choosing scenes, QA-ing the

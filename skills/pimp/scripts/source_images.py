@@ -65,6 +65,18 @@ def engine_ddg(q, gif=False):
         return []
 
 
+def valid_gif(data):
+    """Scraped JPEGs are re-encoded by PIL (sanitized); GIFs are written verbatim,
+    so verify they really are GIFs (header + PIL parse) before keeping them."""
+    if data[:6] not in (b'GIF87a', b'GIF89a'):
+        return False
+    try:
+        im = Image.open(io.BytesIO(data))
+        return im.format == 'GIF'
+    except Exception:
+        return False
+
+
 def letterbox(im):
     """True if the image has black bars top and bottom (cropped cinemascope screenshot)."""
     g = im.convert('L')
@@ -149,7 +161,7 @@ def scrape(q, out, n, gif):
             try:
                 data = fetch(u, 15)
                 if gif and u.lower().endswith('.gif'):
-                    if len(data) < 30000:
+                    if len(data) < 30000 or not valid_gif(data):
                         continue
                     ext = '.gif'
                 else:

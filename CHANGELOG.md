@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.3.0 — crash-test fixes
+
+Full audit (8 findings), everything proven by command:
+
+- **init_mapping.sh** (new): probes the rush with ffprobe and generates a correct
+  mapping skeleton — real fps, width/height, durationInFrames. Kills the wrong-fps /
+  cut-short class of bugs. (The audit itself caught a live one: the demo rush is
+  25fps, not the assumed 30.)
+- **export.sh --from N**: economical iteration is now one command — re-renders only
+  frames N→end and splices onto the existing reel, frame-accurate (proven: identical
+  frame count after splice).
+- **contribute.py re-run safe**: a per-project `.contributed.json` marker makes
+  re-runs contribute only the delta — honest use_count, no duplicate PRs.
+- **make_demo.sh**: picks Thomas, else any installed French voice, else the default
+  voice with an English script — no more silent French-text-English-voice demo.
+- **valid_gif()**: scraped GIFs are verified (header + PIL parse) before being kept.
+- Docs: honest disk figure (~470MB), bank coverage note (seed leans
+  personal-development; other niches grow via mybank + contributions).
+
 ## 0.2.1 — fresh-install fix
 
 - **Fix**: `doctor.sh` failed `template-render` on every fresh install. It rendered the

@@ -74,7 +74,8 @@ Two changes came in after the first full export. Neither triggered a full re-ren
 
 **Color-corrected rush** (new source file, same edit): swap the file, render once.
 
-**Point 3 reworked** (images changed after 26s only):
+**Point 3 reworked** (images changed after 26s only) — today this is one command,
+`export.sh <project> --from 780`; here is what it does under the hood:
 
 ```bash
 # render just the changed span
