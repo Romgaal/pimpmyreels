@@ -37,7 +37,8 @@ mapping = {
     'height': st['height'],
     'durationInFrames': frames,
     'subtitlesBurned': False,
-    'imageTop': 118,
+    'imageTop': 235,   # below the Instagram UI header (safe zone)
+    'imageShadow': False,
     'segments': [],
 }
 json.dump(mapping, open(os.path.join(proj, 'mapping.json'), 'w'), indent=1)

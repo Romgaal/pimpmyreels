@@ -32,6 +32,31 @@ Precision is everything. The query describes **the moment**, not the film.
 - **Animated memes**: add `--gif` and search the meme by its name
   (`shia labeouf just do it meme`), not by description.
 
+## Atmospheric images — a different search entirely
+
+Roughly half a good reel is *breath* images (see `mapping-guide.md`). They are **not**
+searched like film stills: there is no title, no actor. You search a **mood and a
+composition**.
+
+Formula: `"<subject> <composition/action> <atmosphere> cinematic|surreal|aesthetic"`
+
+| ✗ Bad (searching a concept) | ✓ Good (searching an image) |
+|---|---|
+| `comfort zone` | `lone figure walking into burning flower field surreal cinematic` |
+| `disconnection` | `boy sitting on plank above the clouds surreal dreamlike` |
+| `being alone in public` | `vintage smoky parisian cafe crowd 1970s film photo` |
+| `self observation` | `face seen through camera viewfinder grain cinematic` |
+
+Rules:
+
+- Describe **what is in the frame**, never the abstract idea.
+- Add one atmosphere word: `cinematic`, `surreal`, `dreamlike`, `film photo`, `aesthetic`.
+- Keep the **same tonal family** across a single reel's breath images (all warm and
+  filmic, or all cold and stark — not both).
+- Use the default `--format square`: these images are often 1:1 or portrait, and the
+  landscape filter would throw them away.
+- No `--reject` needed usually; these results are rarely watermarked stock.
+
 ## When results are bad
 
 - **Two different queries beat ten candidates from one query.** If the first three

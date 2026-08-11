@@ -51,6 +51,30 @@ These shipped in real reels. Use `--concept <tag>` to pull them straight from th
 | `control-room`, `unknown` | submarine control room | stock |
 | `radar`, `unknown` | green sonar sweep | stock |
 
+## Punch and breath — the 50/50 rule
+
+The single biggest visual difference between a good reel and a premium one is **not**
+the quality of each image: it is the alternation.
+
+- **Punch** — a meme or an iconic movie scene. Instant recognition, humour, energy.
+- **Breath** — an atmospheric image: cinematic, painterly, slightly surreal. A lone
+  figure walking into a burning field, a kid sitting on a plank above the clouds, a
+  smoky vintage café, a face through a camera viewfinder. No punchline; a mood.
+
+Aim for roughly **half and half**. All-punch reads as meme-spam and exhausts the
+viewer; all-breath is pretty and says nothing.
+
+Two rules for the breath images of a single reel:
+
+1. **They must share a universe** — same tonal family (warm, filmic grain, soft
+   surrealism). Mixing a cold 3D render with a 70s film photo breaks the spell.
+2. **They illustrate the feeling, not the word.** "Get out of your comfort zone" →
+   a field burning at the edge of a green meadow. Nobody needs the metaphor
+   explained; that is exactly why it works.
+
+Reference reels that inspired this section alternate strictly: meme, breath, meme,
+breath. Watch one and count.
+
 ## Alternates — never make the same reel twice
 
 **This is the most important section for quality.** The table above is a *standard*,

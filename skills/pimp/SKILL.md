@@ -76,6 +76,10 @@ Read `references/mapping-guide.md` (concept → validated iconic scenes) and
   classics. Ask the user what they're watching if you're unsure.
 - **Consider gifs** for reaction beats (`--gif`): panic, "no no no", "just do it".
   One or two per reel, never more.
+- **Mix punch and breath, roughly 50/50.** A wall of movie stills reads as noisy
+  meme-spam. The reels that look premium alternate a *punch* (meme / iconic scene)
+  with a *breath* (an atmospheric, cinematic, slightly surreal image). Plan both when
+  you write the mapping — see the "Punch and breath" section of `mapping-guide.md`.
 
 Write the plan as a table (timecode · word · film · why) before touching the network.
 
@@ -92,7 +96,14 @@ all tiers — an unused community still outranks a core one you already used); t
 different while the bank keeps the quality bar. `--bank-max 3` forces bank-only
 (useful offline), `--bank-max 0` forces all-fresh.
 
-Craft web queries per `references/query-guide.md`. Add `--gif` for animated memes.
+Images are **square by default** (`--format square`), which is also what the aspect
+filter enforces — atmospheric images are often 1:1 and would be rejected by the
+landscape filter. Pass `--format landscape` only for wide compositions you intend to
+display as landscape.
+
+Craft web queries per `references/query-guide.md` (it has a dedicated section for
+atmospheric images — they are searched by mood, not by film). Add `--gif` for
+animated memes.
 
 ## 5. QA + validation — ONE board, two uses (BLOCKING GATE)
 
@@ -141,8 +152,8 @@ Schema reference: `../../template/mapping.example.json`.
 - Open with a **collage** of 6 validated images — **no text on it**. The user adds
   titles and subtitles themselves (Captions app). Place it high enough to clear the
   speaker's face.
-- `format: "square"` only for close-ups. **Never square-crop a wide composition** —
-  it destroys it.
+- **`format` defaults to square** — leave it out. Only set `"format": "landscape"`
+  for a wide composition that a 1:1 crop would destroy; that is the exception.
 - `align: "left"/"right"` occasionally, to vary the eye. Not every image.
 
 ## 7. Render
@@ -173,8 +184,34 @@ for t in 1 5 12 20 30 40; do ffmpeg -y -ss $t -i out/reel.mp4 -vframes 1 chk_$t.
 ```
 
 Verify and **show** them: images land on the right words · no watermark or black bars ·
-images full-bleed · hard cuts (no fades) · safe zones respected · collage clears the
-face. No delivery without shown proof — "it should be fine" is not a result.
+images full-bleed · hard cuts (no fades) · collage clears the face.
+
+**Safe zone check — mandatory, measured, not eyeballed.** Platform UI covers the top
+200px, the bottom 340px and the right 140px of a 1080×1920 frame. Nothing meaningful
+may enter those. Measure it:
+
+```bash
+# 1. Same frame index, twice: once with segments, once with segments emptied.
+#    Different frame numbers would diff the moving video too and measure nothing.
+npx remotion still ReelCutaways /tmp/withimg.png --frame=400      # normal mapping
+#    then temporarily set "segments": [] in mapping.json and:
+npx remotion still ReelCutaways /tmp/nude.png --frame=400
+# 2. Measure the overlay's bounding box:
+python3 - <<'EOF'
+from PIL import Image, ImageChops
+b = ImageChops.difference(Image.open('/tmp/nude.png').convert('RGB'),
+                          Image.open('/tmp/withimg.png').convert('RGB')).getbbox()
+print('bbox', b, '| top>200:', b[1] > 200, '| bottom<1580:', b[3] < 1580, '| right<940:', b[2] < 940)
+EOF
+```
+
+All three must be True **for cutaway images**. The intro collage is the single
+documented exception: it sits higher (top 44) and clips into the header zone, exactly
+as the reference reels do — it is a 1–2s flourish, not information. Every other frame
+obeys the box. This rule existed in `insta-specs.md` from day one and was
+still violated for three versions — because nothing checked it. Check it.
+
+No delivery without shown proof — "it should be fine" is not a result.
 
 ## 9. Deliver
 

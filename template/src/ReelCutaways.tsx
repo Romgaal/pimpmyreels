@@ -22,9 +22,11 @@ const Media: React.FC<{src: string; style: React.CSSProperties}> = ({src, style}
 		<Img src={staticFile(src)} style={style} />
 	);
 
-const ImgCut: React.FC<{seg: Seg; top: number}> = ({seg, top}) => {
-	const square = seg.format === 'square';
-	const w = square ? Math.round(mapping.width * 0.435) : Math.round(mapping.width * 0.519);
+const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, shadow}) => {
+	// Square is the default: the reference format keeps every cutaway consistent.
+	// 'landscape' is the justified exception (wide compositions that a square crop would destroy).
+	const square = seg.format !== 'landscape';
+	const w = square ? Math.round(mapping.width * 0.41) : Math.round(mapping.width * 0.519);
 	const h = square ? w : Math.round(w * 0.575);
 	const justify =
 		seg.align === 'left' ? 'flex-start' : seg.align === 'right' ? 'flex-end' : 'center';
@@ -32,7 +34,7 @@ const ImgCut: React.FC<{seg: Seg; top: number}> = ({seg, top}) => {
 		<div
 			style={{
 				position: 'absolute',
-				top: square ? top - 12 : top,
+				top,
 				left: 0,
 				right: 0,
 				display: 'flex',
@@ -41,7 +43,15 @@ const ImgCut: React.FC<{seg: Seg; top: number}> = ({seg, top}) => {
 				paddingRight: seg.align === 'right' ? 64 : 0,
 			}}
 		>
-			<div style={{width: w, height: h, borderRadius: 10, overflow: 'hidden'}}>
+			<div
+				style={{
+					width: w,
+					height: h,
+					borderRadius: 4,
+					overflow: 'hidden',
+					boxShadow: shadow ? '0 10px 28px rgba(0,0,0,.28)' : undefined,
+				}}
+			>
 				<Media
 					src={seg.image as string}
 					style={{width: '100%', height: '100%', objectFit: 'cover'}}
@@ -56,17 +66,17 @@ const Collage: React.FC<{images: string[]}> = ({images}) => (
 		style={{
 			position: 'absolute',
 			top: 44,
-			left: 40,
-			right: 40,
+			left: '16%',
+			width: '68%',
 			display: 'grid',
 			gridTemplateColumns: 'repeat(3, 1fr)',
-			gap: 8,
+			gap: 4,
 		}}
 	>
 		{images.slice(0, 6).map((im, i) => (
 			<div
 				key={i}
-				style={{height: Math.round(mapping.height * 0.107), borderRadius: 8, overflow: 'hidden'}}
+				style={{aspectRatio: '1', borderRadius: 4, overflow: 'hidden'}}
 			>
 				<Media src={im} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
 			</div>
@@ -76,7 +86,8 @@ const Collage: React.FC<{images: string[]}> = ({images}) => (
 
 export const ReelCutaways: React.FC = () => {
 	const segs = mapping.segments as Seg[];
-	const top = (mapping as {imageTop?: number}).imageTop ?? 118;
+	const top = (mapping as {imageTop?: number}).imageTop ?? 235;
+	const shadow = (mapping as {imageShadow?: boolean}).imageShadow === true;
 	return (
 		<AbsoluteFill style={{backgroundColor: '#000'}}>
 			<OffthreadVideo src={staticFile(mapping.rush)} />
@@ -87,7 +98,7 @@ export const ReelCutaways: React.FC = () => {
 						{seg.type === 'collage' ? (
 							<Collage images={seg.images as string[]} />
 						) : (
-							<ImgCut seg={seg} top={top} />
+							<ImgCut seg={seg} top={top} shadow={shadow} />
 						)}
 					</Sequence>
 				);

@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.4.0 — the polished look
+
+Calibrated against reference reels, every change measured on a real reel:
+
+- **Safe zone fixed.** `imageTop` 118 → **235**. The code had been violating its own
+  `insta-specs.md` (documented 200px UI header) since 0.1 — the top of every cutaway
+  sat under the Instagram interface. Proven: bbox top 118 (violation) → 235 (compliant).
+- **Square by default**, 41% of frame width (was landscape at 52%, which overwhelmed
+  the speaker). Landscape is now the justified exception.
+- **Sourcing follows the format**: new `--format square|landscape` drives the aspect
+  filter. The old landscape-only gate rejected square/atmospheric images outright —
+  it would have made the point below impossible.
+- **Punch and breath, ~50/50.** The method now asks for half memes/film stills and half
+  atmospheric, cinematic images sharing one tonal universe. A wall of stills reads as
+  meme-spam; the alternation is what looks premium. New sections in mapping-guide and
+  query-guide (atmospheric images are searched by mood and composition, never by film).
+- Collage centered at 68% wide, 4px gap, square cells; corner radius 10 → 4; optional
+  subtle `imageShadow` (off by default).
+- **Safe-zone check is now part of the proof step** — measured with a bounding box on
+  the same frame with and without the overlay. A documented rule that nothing enforces
+  is a wish. The intro collage is the one written-down exception.
+
 ## 0.3.0 — crash-test fixes
 
 Full audit (8 findings), everything proven by command:

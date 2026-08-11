@@ -51,13 +51,17 @@ def fetch(url, timeout=20):
     return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout).read()
 
 
-def engine_bing(q, gif=False):
-    f = '+filterui:photo-animatedgif' if gif else '+filterui:aspect-wide+filterui:imagesize-large'
+def engine_bing(q, gif=False, fmt='square'):
+    if gif:
+        f = '+filterui:photo-animatedgif'
+    else:
+        aspect = 'aspect-wide' if fmt == 'landscape' else 'aspect-square'
+        f = f'+filterui:{aspect}+filterui:imagesize-large'
     html = fetch('https://www.bing.com/images/search?q=' + urllib.parse.quote(q) + '&form=HDRSC2&qft=' + f)
     return re.findall(r'murl&quot;:&quot;(.*?)&quot;', html.decode('utf-8', 'ignore'))[:45]
 
 
-def engine_ddg(q, gif=False):
+def engine_ddg(q, gif=False, fmt='square'):
     try:
         html = fetch('https://duckduckgo.com/html/?q=' + urllib.parse.quote(q + (' gif' if gif else ' movie scene still')))
         return [urllib.parse.unquote(u) for u in re.findall(r'imgurl=([^&"]+)', html.decode('utf-8', 'ignore'))][:30]
@@ -135,10 +139,19 @@ def from_bank(concept, out, n, used):
     return got
 
 
-def scrape(q, out, n, gif):
+def fits(im, fmt):
+    """Aspect gate driven by how the image will be DISPLAYED.
+    square  : 0.8-2.0 — a square or mildly wide shot crops cleanly to 1:1. Mood and
+              artistic images are often square/portrait and must not be rejected.
+    landscape: >=1.2 — wide compositions only."""
+    r = im.width / im.height
+    return r >= 1.2 if fmt == 'landscape' else 0.8 <= r <= 2.0
+
+
+def scrape(q, out, n, gif, fmt='square'):
     block = blocklist()
     got = []
-    cache = os.path.join(HOME, 'cache', hashlib.sha1((q + str(gif)).encode()).hexdigest()[:12])
+    cache = os.path.join(HOME, 'cache', hashlib.sha1((q + str(gif) + fmt).encode()).hexdigest()[:12])
     if os.path.isdir(cache) and os.listdir(cache):
         for i, f in enumerate(sorted(os.listdir(cache))[:n]):
             dst = os.path.join(out, f'web-{i+1}{os.path.splitext(f)[1]}')
@@ -150,7 +163,7 @@ def scrape(q, out, n, gif):
         if len(got) >= n:
             break
         try:
-            urls = eng(q, gif)
+            urls = eng(q, gif, fmt)
         except Exception:
             continue
         for u in urls:
@@ -166,7 +179,7 @@ def scrape(q, out, n, gif):
                     ext = '.gif'
                 else:
                     im = Image.open(io.BytesIO(data)).convert('RGB')
-                    if im.width < 720 or im.width < im.height * 1.2 or letterbox(im):
+                    if im.width < 720 or not fits(im, fmt) or letterbox(im):
                         continue
                     buf = io.BytesIO()
                     im.save(buf, 'JPEG', quality=90)
@@ -191,6 +204,8 @@ if __name__ == '__main__':
                     help='max candidates taken from the banks (default 1). The rest come '
                          'from the web, so every board offers fresh options. Use '
                          '--bank-max 3 to work offline from the bank only.')
+    ap.add_argument('--format', dest='fmt', choices=['square', 'landscape'], default='square',
+                    help='intended display format — drives the aspect filter (default square)')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
     a = ap.parse_args()
@@ -206,7 +221,7 @@ if __name__ == '__main__':
 
     res = from_bank(a.concept, a.out, bank_budget, used)
     if len(res) < a.candidates:
-        res += scrape(a.query, a.out, a.candidates - len(res), a.gif)
+        res += scrape(a.query, a.out, a.candidates - len(res), a.gif, a.fmt)
     # Last resort: web gave nothing (offline, blocked) — fill up from the bank.
     if len(res) < a.candidates:
         have = {r.get('hash') for r in res}

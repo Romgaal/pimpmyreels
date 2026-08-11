@@ -5,7 +5,7 @@
   "height": 1920,
   "durationInFrames": 60,
   "subtitlesBurned": false,
-  "imageTop": 118,
+  "imageTop": 235,
   "segments": [
     {
       "start": 0,
@@ -19,7 +19,18 @@
         "fixture/img/6.jpg"
       ]
     },
-    { "start": 20, "image": "fixture/img/1.jpg", "format": "landscape", "align": "center" },
-    { "start": 40, "image": "fixture/img/2.jpg", "format": "square", "align": "right" }
-  ]
+    {
+      "start": 20,
+      "image": "fixture/img/1.jpg",
+      "format": "square",
+      "align": "center"
+    },
+    {
+      "start": 40,
+      "image": "fixture/img/2.jpg",
+      "format": "square",
+      "align": "right"
+    }
+  ],
+  "imageShadow": false
 }
