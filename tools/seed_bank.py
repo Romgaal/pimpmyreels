@@ -8,7 +8,8 @@ usable alternates. Rejected images are listed in EXCLUDE with the reason.
 import hashlib, json, os, shutil, sys, datetime
 from PIL import Image
 
-SRC = "/Users/romgal/CLAUDE/Remotion - Montage & AE/remotion/public"
+# Maintainer-only, one-shot. Point PIMP_SEED_SRC at the folder holding the stills.
+SRC = os.environ.get("PIMP_SEED_SRC", "")
 DST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'bank')
 TODAY = datetime.date.today().isoformat()
 
