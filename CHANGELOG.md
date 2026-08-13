@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.1 — timing integrity
+
+- **Fix: right-aligned images entered the icon rail.** `paddingRight` was 64px while
+  the platform rail eats ~140px — a right-aligned cutaway reached x=1016 (limit 940).
+  Now 150px. Caught by the v0.4 safe-zone check on a real reel, one render before
+  shipping it. Margins are asymmetric on purpose: 64 left (no UI there), 150 right.
+- **Never assume the frame rate.** The method said "rushes are usually 30fps" — an
+  invitation to guess. A 60fps rush treated as 30 puts every image at double its
+  intended time. fps now always comes from `mapping.json`, which `init_mapping.sh`
+  reads from the file itself (verified: a 60fps rush is detected as 60).
+- **Variable frame rate is detected and refused.** Phone recordings are often VFR, and
+  `frame = seconds × fps` silently stops being true — every image drifts. `init_mapping.sh`
+  compares r_frame_rate against avg_frame_rate and prints the exact ffmpeg command to
+  convert to CFR (verified on a real VFR file: 60 announced vs 18.4 actual, caught).
+  Non-zero stream start times are flagged too.
+- **Drift check added to the proof step**: the export must have the same frame count and
+  duration as the rush. Any difference means every image is off by that much.
+
 ## 0.4.0 — the polished look
 
 Calibrated against reference reels, every change measured on a real reel:

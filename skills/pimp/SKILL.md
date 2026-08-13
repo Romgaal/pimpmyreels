@@ -51,7 +51,10 @@ if already done.
 
 - **Trust the timecodes, never the spelling.** Whisper mangles words ("persimmonité",
   "un vir"). That is fine — you only need *when*, not perfect text.
-- `frame = seconds × fps` (rushes are usually 30fps; check with ffprobe).
+- `frame = seconds × fps` — and **fps is whatever `mapping.json` says**, never an
+  assumption. Phone rushes come in 24, 25, 30, 50 and 60fps; treating a 60fps rush as
+  30 puts every single image at double the intended time. `init_mapping.sh` reads the
+  real value (and warns on variable frame rate, which breaks the formula entirely).
 - To find a specific word's timecode, grep `words.json` for it.
 
 ## 3. Think the mapping BEFORE sourcing anything
@@ -205,7 +208,22 @@ print('bbox', b, '| top>200:', b[1] > 200, '| bottom<1580:', b[3] < 1580, '| rig
 EOF
 ```
 
-All three must be True **for cutaway images**. The intro collage is the single
+**Timing integrity — same check, one command.** The export must have exactly the same
+duration and frame count as the rush; any difference means drift, and every image is
+off by that much:
+
+```bash
+for f in rush.mp4 out/reel.mp4; do
+  ffprobe -v error -select_streams v:0 -count_frames \
+    -show_entries stream=nb_read_frames,r_frame_rate \
+    -show_entries format=duration -of default=noprint_wrappers=1 "$f"
+done
+```
+
+Frame count and duration must match. If they don't, the mapping's `fps` or
+`durationInFrames` is wrong — regenerate with `init_mapping.sh`, never patch by hand.
+
+All three safe-zone bounds must be True **for cutaway images**. The intro collage is the single
 documented exception: it sits higher (top 44) and clips into the header zone, exactly
 as the reference reels do — it is a 1–2s flourish, not information. Every other frame
 obeys the box. This rule existed in `insta-specs.md` from day one and was

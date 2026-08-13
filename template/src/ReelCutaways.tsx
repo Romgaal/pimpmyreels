@@ -39,8 +39,10 @@ const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, s
 				right: 0,
 				display: 'flex',
 				justifyContent: justify,
+				// Asymmetric on purpose: the platform icon rail eats ~140px on the RIGHT.
+				// 64px was fine on the left and overflowed on the right (measured).
 				paddingLeft: seg.align === 'left' ? 64 : 0,
-				paddingRight: seg.align === 'right' ? 64 : 0,
+				paddingRight: seg.align === 'right' ? 150 : 0,
 			}}
 		>
 			<div
