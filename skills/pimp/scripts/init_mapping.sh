@@ -20,6 +20,7 @@ rush, proj = os.environ['RUSH'], os.environ['PROJ']
 p = subprocess.run(
     ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
      '-show_entries', 'stream=r_frame_rate,avg_frame_rate,width,height,nb_frames,start_time',
+     '-show_entries', 'stream_side_data=rotation',
      '-show_entries', 'format=duration', '-of', 'json', rush],
     capture_output=True, text=True, check=True)
 d = json.loads(p.stdout)
@@ -43,6 +44,22 @@ if avg and r and abs(r - avg) / r > 0.01:
     print("  Image timing WILL drift. Convert to constant frame rate first:")
     print(f"    ffmpeg -i '{rush}' -vsync cfr -r {round(avg)} -c:v libx264 -crf 15 -c:a copy fixed.mp4")
     print("  Then re-run init_mapping.sh on fixed.mp4.")
+
+# Phone recordings store orientation as metadata instead of rotating the pixels.
+# ffmpeg applies it on decode, the renderer may not: the reel comes out lying down,
+# and width/height above are the STORED ones, so the geometry is wrong too.
+rot = 0
+for sd in st.get('side_data_list', []):
+    if 'rotation' in sd:
+        rot = int(sd['rotation'])
+if rot % 360:
+    print(f"WARNING: the rush carries {rot} deg of rotation metadata, pixels are "
+          f"{st['width']}x{st['height']}.")
+    print("  Bake it in before anything else, or the reel renders sideways:")
+    print(f"    ffmpeg -i '{rush}' -c:v libx264 -crf 15 -preset slow -pix_fmt yuv420p "
+          f"-r {round(avg) or round(r)} -c:a aac -b:a 256k fixed.mp4")
+    print("  Then re-run init_mapping.sh on fixed.mp4.")
+    st['width'], st['height'] = st['height'], st['width']
 
 # Stream offsets: a non-zero audio/video start shifts the whole reel.
 if abs(float(st.get('start_time', 0) or 0)) > 0.02:
