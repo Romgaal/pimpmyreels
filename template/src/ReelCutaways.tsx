@@ -22,12 +22,28 @@ const Media: React.FC<{src: string; style: React.CSSProperties}> = ({src, style}
 		<Img src={staticFile(src)} style={style} />
 	);
 
+// Burned-in captions (Captions app etc.) sometimes sit HIGH, inside the cutaway band.
+// `captionsTop` in mapping.json declares where they start; every overlay is then fitted
+// above them instead of covering the first words. Measure it, never guess it:
+// `python3 scripts/detect_captions.py <project>`.
+const capTop = (mapping as {captionsTop?: number}).captionsTop;
+// Purely visual breathing room. The sampling slack is already baked into captionsTop
+// by detect_captions.py, which reports a conservative bound, not a raw measurement.
+const GAP = 10;
+
 const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, shadow}) => {
 	// Square is the default: the reference format keeps every cutaway consistent.
 	// 'landscape' is the justified exception (wide compositions that a square crop would destroy).
-	const square = seg.format !== 'landscape';
-	const w = square ? Math.round(mapping.width * 0.41) : Math.round(mapping.width * 0.519);
-	const h = square ? w : Math.round(w * 0.575);
+	const fmt = seg.format ?? (mapping as {imageFormat?: string}).imageFormat;
+	const square = fmt !== 'landscape';
+	let w = square ? Math.round(mapping.width * 0.41) : Math.round(mapping.width * 0.519);
+	let h = square ? w : Math.round(w * 0.575);
+	// Shrink (keeping the aspect ratio) so the image never enters the caption band.
+	if (capTop && top + h > capTop - GAP) {
+		const k = (capTop - GAP - top) / h;
+		h = Math.round(h * k);
+		w = Math.round(w * k);
+	}
 	const justify =
 		seg.align === 'left' ? 'flex-start' : seg.align === 'right' ? 'flex-end' : 'center';
 	return (
@@ -63,13 +79,25 @@ const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, s
 	);
 };
 
-const Collage: React.FC<{images: string[]}> = ({images}) => (
+const COLLAGE_TOP = 44;
+
+const Collage: React.FC<{images: string[]}> = ({images}) => {
+	// 3x2 square cells: height = 2 cells + 1 gap. Narrow it if burned captions sit high.
+	let pct = 0.68;
+	if (capTop) {
+		const cell = (mapping.width * pct - 8) / 3;
+		const hgt = cell * 2 + 4;
+		if (COLLAGE_TOP + hgt > capTop - GAP) {
+			pct *= (capTop - GAP - COLLAGE_TOP) / hgt;
+		}
+	}
+	return (
 	<div
 		style={{
 			position: 'absolute',
-			top: 44,
-			left: '16%',
-			width: '68%',
+			top: COLLAGE_TOP,
+			left: `${(100 - pct * 100) / 2}%`,
+			width: `${pct * 100}%`,
 			display: 'grid',
 			gridTemplateColumns: 'repeat(3, 1fr)',
 			gap: 4,
@@ -84,7 +112,8 @@ const Collage: React.FC<{images: string[]}> = ({images}) => (
 			</div>
 		))}
 	</div>
-);
+	);
+};
 
 export const ReelCutaways: React.FC = () => {
 	const segs = mapping.segments as Seg[];

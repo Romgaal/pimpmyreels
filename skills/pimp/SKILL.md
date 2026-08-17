@@ -36,9 +36,23 @@ this reel lives there: `words.json`, `candidates/`, `board.png`, `mapping.json`,
 `img/`, `out/`. That way any reel can be reopened and re-exported later without
 redoing the expensive steps.
 
-Determine **once** whether subtitles are already burned into the rush (look at a
-frame, or ask). Burned-in subtitles (Captions app etc.) are common and change where
-images sit — see `references/insta-specs.md`.
+**Order matters: pimp the RAW rush, add captions afterwards.** Captions apps place
+their text wherever they like — often high, exactly where the cutaways go. Adding
+images last means fighting for the same 400px. If the user still hands you a rush with
+captions already burned in, measure the band before you place anything:
+
+```bash
+python3 scripts/detect_captions.py ~/pimpmyreels/<name> --write
+```
+
+It reports the caption band and, on collision, writes a conservative `captionsTop` into
+`mapping.json` — every overlay is then automatically fitted above the text instead of
+eating the first word of each line. Say plainly that a re-export with the captions in
+the lower third (or a raw rush) gives a better-looking result, then carry on: a fitted
+reel ships today, it does not wait for a re-export.
+
+With `captionsTop` set, prefer `"imageFormat": "landscape"`: the fit shrinks by height,
+and landscape keeps the full 41% width where a square would collapse to 23%.
 
 ## 2. Transcribe FIRST — never guess timings
 
@@ -187,7 +201,8 @@ for t in 1 5 12 20 30 40; do ffmpeg -y -ss $t -i out/reel.mp4 -vframes 1 chk_$t.
 ```
 
 Verify and **show** them: images land on the right words · no watermark or black bars ·
-images full-bleed · hard cuts (no fades) · collage clears the face.
+images full-bleed · hard cuts (no fades) · collage clears the face · **burned-in
+captions fully readable — not one letter covered**.
 
 **Safe zone check — mandatory, measured, not eyeballed.** Platform UI covers the top
 200px, the bottom 340px and the right 140px of a 1080×1920 frame. Nothing meaningful

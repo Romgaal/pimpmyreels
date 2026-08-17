@@ -48,7 +48,11 @@ if avg and r and abs(r - avg) / r > 0.01:
 if abs(float(st.get('start_time', 0) or 0)) > 0.02:
     print(f"WARNING: video stream starts at {st['start_time']}s, not 0 — timings may be offset.")
 duration = float(d['format']['duration'])
-frames = int(duration * fps)  # floor: never exceed the rush
+# Ground truth first: the container's own frame count. Falling back to
+# int(duration * fps) truncates on float error (40.533*30 = 1215.99 -> 1215),
+# clipping the last frame of the reel.
+nbf = st.get('nb_frames')
+frames = int(nbf) if nbf and str(nbf).isdigit() else round(duration * fps)
 mapping = {
     'rush': 'project/' + os.path.basename(rush),
     'fps': fps,

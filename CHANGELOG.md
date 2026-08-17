@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.2 — burned captions no longer get eaten
+
+- **`detect_captions.py` (new).** A rush that already went through Captions/CapCut often
+  carries its text HIGH — at y488 on a real one, right inside the 235-678 cutaway band.
+  The images then cover the first word of every line ("d'aborder." shipped as "order.").
+  Detection diffs frame pairs: swapping text saturates pixels, a moving face doesn't, so
+  a threshold of 180 isolates the caption band (60 catches the whole body). Verified on
+  three rushes: one true positive, two true negatives.
+- **`captionsTop` in mapping.json**: overlays (cutaways *and* the intro collage) are
+  fitted above the band, keeping their aspect ratio, instead of covering it. The value is
+  reported conservatively — 10 sampled frames cannot see the tallest caption line of 1200,
+  measured 517 by sampling vs 488 by hand — so it means "nothing goes below this".
+- **`imageFormat`** at mapping level. Under a caption fit, landscape keeps the full 41%
+  width where a square would collapse to 23% for the same available height.
+- **The method now states the order**: pimp the raw rush, add captions last.
+- **Fix: the last frame was dropped.** `int(duration * fps)` truncates on float error
+  (40.533 x 30 = 1215.99 -> 1215). `init_mapping.sh` now takes the container's own
+  `nb_frames` as ground truth (verified: 1216).
+
 ## 0.4.1 — timing integrity
 
 - **Fix: right-aligned images entered the icon rail.** `paddingRight` was 64px while
