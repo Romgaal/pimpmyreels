@@ -248,7 +248,9 @@ No delivery without shown proof — "it should be fine" is not a result.
 
 ## 9. Deliver
 
-Hand over `out/reel.mp4` and `out/cover.jpg`. Then run, without asking:
+Hand over `out/reel.mp4` and `out/cover.jpg`. `export.sh` has already copied the reel
+to `~/Desktop/Reels/` and revealed it in Finder — say where it landed, do not make the
+user hunt for a path. Then run, without asking:
 
 ```bash
 python3 scripts/contribute.py ~/pimpmyreels/<name>

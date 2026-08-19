@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.3 — the file lands somewhere you can find it
+
+- **`export.sh` now delivers.** A path printed in a terminal is not a delivery: the
+  reel sat in `~/pimpmyreels/<name>/out/` and finding it meant navigating there by
+  hand, every time. Each export now also lands in `~/Desktop/Reels/<project>.mp4`
+  (+ cover) and, on macOS, opens Finder with the file selected. `PIMP_DELIVER_DIR`
+  overrides the folder; `PIMP_DELIVER_DIR=off` disables it.
+- **query-guide: name the moment, not the film.** Generic `"<film> scene film still"`
+  queries match fan-made grid compilations best — 8 of 36 candidates on one reel.
+  Three pixel heuristics to filter grids were written and all three dropped (2/9,
+  3/11 with a false positive, 5/11); the board gate catches them anyway. The query
+  is the fix, with a before/after table.
+
 ## 0.4.2 — burned captions no longer get eaten
 
 - **`detect_captions.py` (new).** A rush that already went through Captions/CapCut often

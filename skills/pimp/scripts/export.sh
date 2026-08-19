@@ -64,4 +64,19 @@ e = s.get('end', m['segments'][1]['start'] if len(m['segments']) > 1 else m['dur
 print(round((s['start'] + e) / 2 / m['fps'], 2))")
 ffmpeg -y -ss "$MID" -i "$PROJ/out/reel.mp4" -vframes 1 "$PROJ/out/cover.jpg" -loglevel error
 
+# Hand the file over somewhere findable. A path printed in a terminal is not a
+# delivery: the user still has to go dig for it. Default lands next to the other
+# finished reels; override with PIMP_DELIVER_DIR, disable with PIMP_DELIVER_DIR=off.
+DEST="${PIMP_DELIVER_DIR:-$HOME/Desktop/Reels}"
+if [ "$DEST" != "off" ]; then
+  NAME="$(basename "$PROJ")"
+  mkdir -p "$DEST"
+  cp "$PROJ/out/reel.mp4" "$DEST/$NAME.mp4"
+  [ -f "$PROJ/out/cover.jpg" ] && cp "$PROJ/out/cover.jpg" "$DEST/$NAME.jpg"
+  echo "DELIVERED: $DEST/$NAME.mp4"
+  # Reveal it, selected, in the file manager — macOS only; elsewhere the path above
+  # is the answer and no window is forced open.
+  [ "$(uname)" = "Darwin" ] && open -R "$DEST/$NAME.mp4" 2>/dev/null || true
+fi
+
 echo "EXPORT OK: $PROJ/out/reel.mp4 (+cover.jpg)"
