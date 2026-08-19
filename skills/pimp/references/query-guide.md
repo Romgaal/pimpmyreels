@@ -69,3 +69,24 @@ Rules:
   Movieclips, Fandango, and friends (`data/blocklist.txt`).
 - Nothing usable at all? Pick a **different scene** for the same concept. There is
   always another iconic moment — see `mapping-guide.md`.
+
+## Montage compilations — the query is the fix, not a filter
+
+A generic `"<film> scene film still"` query is what fan-made **grid compilations**
+match best: six thumbnails in one image, sometimes captioned. On one reel, 8 of 36
+candidates came back as montages — all from the beats whose query was generic.
+
+Three pixel heuristics were tried and all three were dropped (uniform-line detection
+caught 2/9, content-jump 3/11 with a false positive, pure white/black gutters 5/11).
+Detecting a grid reliably is harder than it looks and a filter that silently drops
+good stills is worse than none. **The board gate catches them all anyway — read it.**
+
+What actually works is naming the *moment*, not the film:
+
+| Returns montages | Returns single frames |
+|---|---|
+| `Up Pixar Carl and Ellie montage film still` | `Up Pixar Carl sitting alone in his chair` |
+| `Avengers Infinity War dust scene film still` | `Peter Parker I don't feel so good Tony Stark arms` |
+| `Lord of the Rings Gollum scene film still` | `Gollum close up face reflection in water Two Towers` |
+
+The word "montage" in a query is a trap: it asks for exactly the thing to avoid.
