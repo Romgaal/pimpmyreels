@@ -253,7 +253,7 @@ No delivery without shown proof — "it should be fine" is not a result.
 ## 9. Deliver
 
 Hand over `out/reel.mp4` and `out/cover.jpg`. `export.sh` has already copied the reel
-to `~/Downloads/` and revealed it in Finder — say where it landed, do not make the
+to `~/Downloads/<project>-reel.mp4` and revealed it in Finder — say where it landed, do not make the
 user hunt for a path. Then run, without asking:
 
 ```bash

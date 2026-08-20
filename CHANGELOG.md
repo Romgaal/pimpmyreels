@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.5 — the export stops overwriting your source video
+
+- **Data-loss fix.** Delivery wrote `~/Downloads/<project>.mp4`. On a project named
+  `film`, whose rush had come from `~/Downloads/film.mp4`, the export overwrote the
+  user's original video. Recoverable only because the pipeline keeps its own copy of
+  the rush inside the project. Deliveries are now `<project>-reel.mp4`, and `export.sh`
+  additionally refuses to write onto any path the project reads from.
+
 ## 0.4.4 — the collage is the hook, and it gets three seconds
 
 - **The intro collage now holds for at least 3s** (`collageMinSeconds`, default 3).

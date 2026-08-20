@@ -70,14 +70,27 @@ ffmpeg -y -ss "$MID" -i "$PROJ/out/reel.mp4" -vframes 1 "$PROJ/out/cover.jpg" -l
 # Override with PIMP_DELIVER_DIR, disable with PIMP_DELIVER_DIR=off.
 DEST="${PIMP_DELIVER_DIR:-$HOME/Downloads}"
 if [ "$DEST" != "off" ]; then
-  NAME="$(basename "$PROJ")"
+  # The '-reel' suffix is a safety belt, not decoration. Delivering as "<project>.mp4"
+  # destroyed a user's source video: the project was named 'film', the rush had come
+  # from ~/Downloads/film.mp4, and the export wrote straight over it. Recoverable only
+  # because the pipeline keeps its own copy of the rush.
+  NAME="$(basename "$PROJ")-reel"
   mkdir -p "$DEST"
-  cp "$PROJ/out/reel.mp4" "$DEST/$NAME.mp4"
+  TARGET="$DEST/$NAME.mp4"
+  # Belt and braces: never write onto any file this project reads from.
+  for guard in "$PROJ"/rush.*; do
+    [ -e "$guard" ] || continue
+    if [ "$(cd "$(dirname "$TARGET")" && pwd)/$(basename "$TARGET")" = \
+         "$(cd "$(dirname "$guard")" && pwd)/$(basename "$guard")" ]; then
+      echo "REFUSING to deliver: $TARGET is this project's source file"; exit 1
+    fi
+  done
+  cp "$PROJ/out/reel.mp4" "$TARGET"
   [ -f "$PROJ/out/cover.jpg" ] && cp "$PROJ/out/cover.jpg" "$DEST/$NAME.jpg"
-  echo "DELIVERED: $DEST/$NAME.mp4"
+  echo "DELIVERED: $TARGET"
   # Reveal it, selected, in the file manager — macOS only; elsewhere the path above
   # is the answer and no window is forced open.
-  [ "$(uname)" = "Darwin" ] && open -R "$DEST/$NAME.mp4" 2>/dev/null || true
+  [ "$(uname)" = "Darwin" ] && open -R "$TARGET" 2>/dev/null || true
 fi
 
 echo "EXPORT OK: $PROJ/out/reel.mp4 (+cover.jpg)"
