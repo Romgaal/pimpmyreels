@@ -266,6 +266,21 @@ pipeline are validated by revealed preference).
 
 Close with hook advice from `references/hooks.md` — advisory only, never blocking.
 
+## 10. Subtitles (optional, needs a Captions API key)
+
+```bash
+bash scripts/captionize.sh ~/pimpmyreels/<name> --template ctpl_…
+```
+
+Burns styled subtitles on, replacing the phone round-trip. Captions go **last** — the
+API returns a rendered mp4 with no timings, so nothing can be layered on afterwards.
+
+**Pick the template by measurement, not by looks**: most of them clip non-English text
+at the frame edge, and there is no size or placement parameter. `--probe a,b,c` captions
+a 5s sample of the *raw rush* and reports where each one writes. `references/captions-api.md`
+has the verified endpoints, the field names the docs get wrong, and the four templates
+that survive French.
+
 ---
 
 ## Anti-patterns

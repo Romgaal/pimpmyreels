@@ -1,6 +1,20 @@
 # Changelog
 
-## 0.4.5 — captions without the phone round-trip (unverified against the live API)
+## 0.5.0 — captions without the phone round-trip, verified end to end
+
+- **`captionize.sh` works against the live API.** Raw video in, reel with images and
+  styled subtitles out, no phone. Three published details were wrong and cost a 404
+  and two 400s: templates live at `/v1/videos/captions/templates`, the submit fields
+  are `video` and `caption_template_id`, and `"error": null` ships on success.
+- **Only 4 of 20 templates survive French.** 16 clip words at the frame edge — one had
+  a cut word on 4 of 8 sampled frames — and no API parameter controls size or
+  placement. Medusa, Altair, Aries and Buzz measured clean. Documented with ids.
+- **`--probe` runs on the raw rush, not the finished reel.** Differencing frame pairs
+  cannot tell a changing caption from a changing cutaway: probed the wrong way, the
+  tool reported a collision at y529; on the rush, y1277. Same file.
+- All of it in `references/captions-api.md`.
+
+## 0.4.5 — first cut of the Captions bridge (superseded by 0.5.0)
 
 - **`captionize.sh` (new)**: sends a finished reel to the Captions API and gets it back
   with styled subtitles burned in, removing the AirDrop -> app -> export -> upload loop.
