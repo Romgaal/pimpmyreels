@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.5 — captions without the phone round-trip (unverified against the live API)
+
+- **`captionize.sh` (new)**: sends a finished reel to the Captions API and gets it back
+  with styled subtitles burned in, removing the AirDrop -> app -> export -> upload loop.
+  Handles the 50MB input cap by re-encoding at CRF 20 first (measured: a 40s 1080x1920
+  reel goes 62MB -> 23MB, no visible loss).
+- **`--probe` mode**: captions a 5s sample with several templates and runs
+  `detect_captions.py` on each to measure WHERE the text lands. This matters: the
+  Captions app writes at y~488 on a real export, straight through the 235-678 cutaway
+  band, which is what ate the first word of every line on one reel. Pick a template
+  that writes low; verify, don't assume.
+- **Order is fixed**: images first, captions last. The API returns a rendered mp4 only —
+  no SRT, no word timings — so nothing can be layered on afterwards.
+- **STATUS: endpoint paths and response field names are taken from the published docs
+  and have NOT been exercised against the live API** (no key on hand). `--list` is the
+  smoke test: run it first, and fix the paths if they differ before trusting the rest.
+
 ## 0.4.4 — the collage is the hook, and it gets three seconds
 
 - **The intro collage now holds for at least 3s** (`collageMinSeconds`, default 3).
