@@ -1,36 +1,5 @@
 # Changelog
 
-## 0.5.0 — captions without the phone round-trip, verified end to end
-
-- **`captionize.sh` works against the live API.** Raw video in, reel with images and
-  styled subtitles out, no phone. Three published details were wrong and cost a 404
-  and two 400s: templates live at `/v1/videos/captions/templates`, the submit fields
-  are `video` and `caption_template_id`, and `"error": null` ships on success.
-- **Only 4 of 20 templates survive French.** 16 clip words at the frame edge — one had
-  a cut word on 4 of 8 sampled frames — and no API parameter controls size or
-  placement. Medusa, Altair, Aries and Buzz measured clean. Documented with ids.
-- **`--probe` runs on the raw rush, not the finished reel.** Differencing frame pairs
-  cannot tell a changing caption from a changing cutaway: probed the wrong way, the
-  tool reported a collision at y529; on the rush, y1277. Same file.
-- All of it in `references/captions-api.md`.
-
-## 0.4.5 — first cut of the Captions bridge (superseded by 0.5.0)
-
-- **`captionize.sh` (new)**: sends a finished reel to the Captions API and gets it back
-  with styled subtitles burned in, removing the AirDrop -> app -> export -> upload loop.
-  Handles the 50MB input cap by re-encoding at CRF 20 first (measured: a 40s 1080x1920
-  reel goes 62MB -> 23MB, no visible loss).
-- **`--probe` mode**: captions a 5s sample with several templates and runs
-  `detect_captions.py` on each to measure WHERE the text lands. This matters: the
-  Captions app writes at y~488 on a real export, straight through the 235-678 cutaway
-  band, which is what ate the first word of every line on one reel. Pick a template
-  that writes low; verify, don't assume.
-- **Order is fixed**: images first, captions last. The API returns a rendered mp4 only —
-  no SRT, no word timings — so nothing can be layered on afterwards.
-- **STATUS: endpoint paths and response field names are taken from the published docs
-  and have NOT been exercised against the live API** (no key on hand). `--list` is the
-  smoke test: run it first, and fix the paths if they differ before trusting the rest.
-
 ## 0.4.4 — the collage is the hook, and it gets three seconds
 
 - **The intro collage now holds for at least 3s** (`collageMinSeconds`, default 3).
