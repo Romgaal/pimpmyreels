@@ -65,9 +65,10 @@ print(round((s['start'] + e) / 2 / m['fps'], 2))")
 ffmpeg -y -ss "$MID" -i "$PROJ/out/reel.mp4" -vframes 1 "$PROJ/out/cover.jpg" -loglevel error
 
 # Hand the file over somewhere findable. A path printed in a terminal is not a
-# delivery: the user still has to go dig for it. Default lands next to the other
-# finished reels; override with PIMP_DELIVER_DIR, disable with PIMP_DELIVER_DIR=off.
-DEST="${PIMP_DELIVER_DIR:-$HOME/Desktop/Reels}"
+# delivery: the user still has to go dig for it. Downloads is where rushes arrive and
+# where people already look, so that is where the finished reel goes.
+# Override with PIMP_DELIVER_DIR, disable with PIMP_DELIVER_DIR=off.
+DEST="${PIMP_DELIVER_DIR:-$HOME/Downloads}"
 if [ "$DEST" != "off" ]; then
   NAME="$(basename "$PROJ")"
   mkdir -p "$DEST"

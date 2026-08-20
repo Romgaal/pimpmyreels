@@ -169,6 +169,10 @@ Schema reference: `../../template/mapping.example.json`.
 - Open with a **collage** of 6 validated images — **no text on it**. The user adds
   titles and subtitles themselves (Captions app). Place it high enough to clear the
   speaker's face.
+- **The collage holds 3s minimum — it IS the hook.** The template enforces this
+  (`collageMinSeconds`), drops any cutaway swallowed underneath, and starts the next
+  one exactly when the collage ends. So write your first cutaway's timecode from the
+  words as usual and let the template resolve the opening; do not hand-shift it.
 - **`format` defaults to square** — leave it out. Only set `"format": "landscape"`
   for a wide composition that a 1:1 crop would destroy; that is the exception.
 - `align: "left"/"right"` occasionally, to vary the eye. Not every image.
@@ -249,7 +253,7 @@ No delivery without shown proof — "it should be fine" is not a result.
 ## 9. Deliver
 
 Hand over `out/reel.mp4` and `out/cover.jpg`. `export.sh` has already copied the reel
-to `~/Desktop/Reels/` and revealed it in Finder — say where it landed, do not make the
+to `~/Downloads/` and revealed it in Finder — say where it landed, do not make the
 user hunt for a path. Then run, without asking:
 
 ```bash

@@ -115,25 +115,63 @@ const Collage: React.FC<{images: string[]}> = ({images}) => {
 	);
 };
 
+// The intro collage IS the hook. Cutting to the first cutaway after a beat or two
+// throws away the visual that stops the scroll, so the collage holds for at least
+// this long and any cutaway underneath it is clipped or dropped — enforced here
+// rather than left to whoever writes the timings.
+const COLLAGE_MIN_SECONDS = 3;
+// A cutaway clipped down to a fraction of a second reads as a glitch, not an edit.
+// Below this, drop it and let the NEXT one start when the collage ends — no flash,
+// and no hole between the collage and the first real image.
+const MIN_CUT_SECONDS = 1;
+
 export const ReelCutaways: React.FC = () => {
 	const segs = mapping.segments as Seg[];
 	const top = (mapping as {imageTop?: number}).imageTop ?? 235;
 	const shadow = (mapping as {imageShadow?: boolean}).imageShadow === true;
+	const minS = (mapping as {collageMinSeconds?: number}).collageMinSeconds ?? COLLAGE_MIN_SECONDS;
+	const {fps, durationInFrames} = mapping;
+
+	// Resolve the timeline once, then render it. Doing this inside the render loop is
+	// how the first version left a hole: dropping a clipped cutaway is only half the
+	// job — the next one has to take its place at the collage's end.
+	const hasCollage = segs[0]?.type === 'collage';
+	const collageEnd = hasCollage
+		? Math.max(segs[1]?.start ?? durationInFrames, segs[0].start + Math.round(minS * fps))
+		: 0;
+
+	const items: {from: number; end: number; seg: Seg; collage?: boolean}[] = [];
+	if (hasCollage) items.push({from: segs[0].start, end: collageEnd, seg: segs[0], collage: true});
+
+	let firstAfterCollage = true;
+	for (let i = hasCollage ? 1 : 0; i < segs.length; i++) {
+		const seg = segs[i];
+		const rawEnd = seg.end ?? segs[i + 1]?.start ?? durationInFrames;
+		if (rawEnd <= collageEnd) continue;                       // entirely under the collage
+		let from = Math.max(seg.start, collageEnd);
+		if (firstAfterCollage) {
+			// Whichever cutaway comes first takes over the instant the collage ends —
+			// no gap. But not if the clip leaves it under a second: that reads as a
+			// glitch, so skip it and hand the slot to the next one.
+			if (seg.start < collageEnd && rawEnd - collageEnd < MIN_CUT_SECONDS * fps) continue;
+			from = collageEnd;
+			firstAfterCollage = false;
+		}
+		items.push({from, end: rawEnd, seg});
+	}
+
 	return (
 		<AbsoluteFill style={{backgroundColor: '#000'}}>
 			<OffthreadVideo src={staticFile(mapping.rush)} />
-			{segs.map((seg, i) => {
-				const end = seg.end ?? segs[i + 1]?.start ?? mapping.durationInFrames;
-				return (
-					<Sequence key={i} from={seg.start} durationInFrames={end - seg.start}>
-						{seg.type === 'collage' ? (
-							<Collage images={seg.images as string[]} />
-						) : (
-							<ImgCut seg={seg} top={top} shadow={shadow} />
-						)}
-					</Sequence>
-				);
-			})}
+			{items.map((it, i) => (
+				<Sequence key={i} from={it.from} durationInFrames={it.end - it.from}>
+					{it.collage ? (
+						<Collage images={it.seg.images as string[]} />
+					) : (
+						<ImgCut seg={it.seg} top={top} shadow={shadow} />
+					)}
+				</Sequence>
+			))}
 		</AbsoluteFill>
 	);
 };

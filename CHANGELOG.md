@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.4.4 — the collage is the hook, and it gets three seconds
+
+- **The intro collage now holds for at least 3s** (`collageMinSeconds`, default 3).
+  It was ending after a beat or two — sometimes 0.9s — which throws away the visual
+  that stops the scroll during the exact window the hook needs. Enforced in the
+  template, not left to whoever writes the timings.
+- **Cutaways under the collage are handled, not clipped blind.** One swallowed
+  entirely is dropped; one left under a second by the clip is dropped too (a
+  fraction-of-a-second image reads as a glitch) and the next cutaway takes over the
+  instant the collage ends, so no gap opens. The first version of this fix did leave
+  a 0.7s hole — the timeline is now resolved once, before rendering, instead of
+  being decided inside the render loop.
+- **Delivery goes to `~/Downloads`** instead of the Desktop: that is where rushes
+  arrive and where people already look. `PIMP_DELIVER_DIR` still overrides it.
+
 ## 0.4.3 — the file lands somewhere you can find it
 
 - **`export.sh` now delivers.** A path printed in a terminal is not a delivery: the
