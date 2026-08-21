@@ -90,3 +90,23 @@ What actually works is naming the *moment*, not the film:
 | `Lord of the Rings Gollum scene film still` | `Gollum close up face reflection in water Two Towers` |
 
 The word "montage" in a query is a trap: it asks for exactly the thing to avoid.
+
+
+## Frame size beats everything
+
+Add **"close up"** or **"medium shot"** to nearly every query. A cutaway renders at 41%
+of frame width; a wide shot's subject ends up a few millimetres tall on a phone and the
+image communicates nothing. `Casino Royale poker table` returns a wide table with four
+small figures; `Daniel Craig close up at the poker table` returns a face.
+
+## Non-film images without the AI slop
+
+When the word is a thing rather than a story — posture, a dictionary, a library, a pair
+of polished shoes — search for the **object, photographically**, and stay away from mood
+words. `cinematic aesthetic golden hour silhouette` is what summons AI renders.
+
+| Summons AI art | Returns a photograph |
+|---|---|
+| `elegance and refinement aesthetic` | `close up polished black oxford dress shoes` |
+| `knowledge and wisdom concept` | `open vintage dictionary page close up` |
+| `confidence energy portrait` | `man adjusting his tie in a mirror close up` |

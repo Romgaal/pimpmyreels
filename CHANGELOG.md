@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.7 — show every word, and only in close-up
+
+- **Density was wrong by a factor of three.** The method asked for one image per 4-6s
+  and produced reels a user called padding: two images across nine seconds of dense
+  speech. It now asks for **one image every 2-3s**, and treats an enumeration as as many
+  images as it has items — "posture, diction, vocabulary, hygiene, intelligence, general
+  knowledge" is six images in three seconds, not one. On a real 86s reel this took the
+  count from 16 to 39.
+- **Close-ups and medium shots only.** A cutaway renders at 41% of frame width — a
+  matchbox on a phone. A wide shot's subject is a smudge there and no crop repairs it,
+  because the subject is already small in the source. A full-body James Bond shipped
+  this way and was unreadable. Every query now carries "close up" or "medium shot", and
+  candidates are judged at final size on the board.
+- **Films are a source, not a requirement** — but the split matters: an *object* (an ear,
+  a dictionary, a library, chess pieces) photographs fine as a plain image, while a
+  *human idea* searched as a generic photo comes back as AI portraits, white-background
+  cutouts and flat illustrations. Half of one batch had to be rebuilt for exactly that.
+  Human ideas need a recognisable anchor: a film, a series, or a meme.
+
 ## 0.4.6 — the images sit lower, where the phone actually shows them
 
 - **`imageTop` 235 -> 310, collage 44 -> 150.** Reported from a published reel, not

@@ -76,13 +76,24 @@ if already done.
 Read `references/mapping-guide.md` (concept → validated iconic scenes) and
 `references/style-rules.md` (the hard rules and the anti-examples).
 
-- One beat per **strong concept-word**, not per sentence. Abstract phrases are
-  carried by the speaker's face — don't force an image on them.
-- Only **instantly recognizable** scenes: if it takes more than half a second to
-  identify, it's the wrong image.
-- 2–10s per image. A great image can hold 8s; a weak one is wrong at any length.
-- **Long rush (>90s): about one image per 4–6s max.** Illustrate the strongest
-  beats only, otherwise the reel turns into a slideshow.
+- **Show every word that can be shown.** One image per *idea*, and an enumeration is
+  as many ideas as it has items: "posture, diction, vocabulary, hygiene, intelligence,
+  general knowledge" is six images, not one. Two images across nine seconds of dense
+  speech is padding, and it reads as padding.
+- **Aim for one image every 2–3s** on a dense script. The old guidance here said one per
+  4–6s and produced exactly the sparse result users reject. Slow down only where the
+  speaker's face genuinely carries the line — a direct address, a pause, the CTA.
+- **CLOSE-UPS AND MEDIUM SHOTS ONLY.** A cutaway is 41% of the frame width; on a phone
+  that is about the size of a matchbox. A wide shot — a figure in a room, a crowd, a
+  full-body walk — turns into an unreadable smudge, and no crop can save it, because the
+  subject is small in the source. Judge every candidate at its final size on the board,
+  not full-screen. This is the single most common reason a technically-fine image fails.
+- Only **instantly recognizable** subjects: if it takes more than half a second to read,
+  it's the wrong image.
+- **It does not have to be a film.** A meme, a gif, a plain photograph of the object or
+  gesture being named — anything that makes the word visible. Films are a reliable source
+  of iconic, recognisable frames, not a requirement.
+- 1.5–8s per image. A great image can hold 6s; a weak one is wrong at any length.
 - **Make this reel unique.** The bank is a quality standard, not a shopping list. If
   the user already has reels, do not reuse the same still for the same idea — the
   alternates table in `mapping-guide.md` exists for that, and the engine surfaces
