@@ -79,7 +79,10 @@ const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, s
 	);
 };
 
-const COLLAGE_TOP = 44;
+// 150, not 44. The reference reels sit their collage near the top edge, but on a real
+// iPhone the Instagram Reels header ("Reels", camera icon) is drawn over that band and
+// the collage lands under the word. Reported from a published reel, not theorised.
+const COLLAGE_TOP = 150;
 
 const Collage: React.FC<{images: string[]}> = ({images}) => {
 	// 3x2 square cells: height = 2 cells + 1 gap. Narrow it if burned captions sit high.
@@ -127,7 +130,7 @@ const MIN_CUT_SECONDS = 1;
 
 export const ReelCutaways: React.FC = () => {
 	const segs = mapping.segments as Seg[];
-	const top = (mapping as {imageTop?: number}).imageTop ?? 235;
+	const top = (mapping as {imageTop?: number}).imageTop ?? 310;
 	const shadow = (mapping as {imageShadow?: boolean}).imageShadow === true;
 	const minS = (mapping as {collageMinSeconds?: number}).collageMinSeconds ?? COLLAGE_MIN_SECONDS;
 	const {fps, durationInFrames} = mapping;

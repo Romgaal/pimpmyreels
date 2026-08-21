@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.6 — the images sit lower, where the phone actually shows them
+
+- **`imageTop` 235 -> 310, collage 44 -> 150.** Reported from a published reel, not
+  theorised: on a real iPhone the Instagram Reels header ("Reels", camera icon) is drawn
+  over the top band, and the collage landed under the word. The old values came from
+  reference reels seen as files; these come from one seen on a phone.
+
 ## 0.4.5 — the export stops overwriting your source video
 
 - **Data-loss fix.** Delivery wrote `~/Downloads/<project>.mp4`. On a project named

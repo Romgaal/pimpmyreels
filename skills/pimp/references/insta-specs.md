@@ -49,3 +49,14 @@ Two workflows, both supported:
   subtitles never overlap, and raise `imageTop` slightly if they do.
 
 Either way: **never add your own text**. The user owns the typography.
+
+
+## Where the images actually sit (measured on a phone, 2026-08)
+
+`imageTop` is **310**, not 235, and the intro collage sits at **150**, not 44.
+
+The earlier values were derived from reference reels watched as video files, where no
+platform UI is drawn. On a real iPhone the Instagram Reels header — the word "Reels"
+and the camera icon — is painted over the top of the frame, and a collage at 44 lands
+directly under the word. A published reel made that obvious in a way no file ever
+could. Trust a screenshot from the phone over a frame from the render.

@@ -77,7 +77,7 @@ mapping = {
     'height': st['height'],
     'durationInFrames': frames,
     'subtitlesBurned': False,
-    'imageTop': 235,   # below the Instagram UI header (safe zone)
+    'imageTop': 310,   # clear of the Instagram Reels header, measured on a real phone
     'imageShadow': False,
     'segments': [],
 }
