@@ -56,3 +56,13 @@ current trends. Log changes here.
   of width, `imageTop` **235** (clears the 200px UI header), corner radius **4**,
   collage **68%** wide and centered with a 4px gap and square cells, optional subtle
   shadow (`imageShadow`, off by default).
+
+
+## A famous meme can tell the wrong story
+
+Recognisability is necessary, not sufficient: check what the reference NARRATES.
+The distracted-boyfriend meme is instantly known — and what it depicts is a man
+cheating on his girlfriend with his eyes. Placed on "if you don't dare, you give up
+your spot" in a reel preaching respect, it contradicts the speaker's message.
+Real example, caught by the user, not the pipeline. Before every pick: "what story
+does this frame tell someone who knows it?" — that story must be the sentence's.

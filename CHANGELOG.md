@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.10 — a famous meme can tell the wrong story
+
+- **Check what a reference NARRATES, not just whether it is recognised.** The
+  distracted-boyfriend meme is universally known and depicts a man cheating on his
+  girlfriend; dropped on "if you don't dare, you give up your spot" in a reel preaching
+  respect, it contradicts the speaker. Caught by the user, not the pipeline. New rule
+  in style-rules: before every pick, ask what story this frame tells someone who knows
+  it — that story has to be the sentence's.
+- **The splice now verifies itself.** Even trimming the head by frame count, the
+  assembled file came out one frame short intermittently. `--from` now compares the
+  result against the mapping and, on mismatch, re-renders in full and says so. An
+  optimisation that silently shifts every image after the cut is worse than none.
+
 ## 0.4.9 — the collage owns the hook, and splices cannot drift
 
 - **The collage holds through the WHOLE hook line** — 3s is the floor, not the target.

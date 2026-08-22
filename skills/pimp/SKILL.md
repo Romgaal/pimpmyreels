@@ -90,6 +90,9 @@ Read `references/mapping-guide.md` (concept → validated iconic scenes) and
   not full-screen. This is the single most common reason a technically-fine image fails.
 - Only **instantly recognizable** subjects: if it takes more than half a second to read,
   it's the wrong image.
+- **And ask what the reference NARRATES.** Recognisable is not enough: a famous meme
+  carries its own story, and that story must agree with the sentence. Real miss —
+  distracted-boyfriend (a man cheating) placed in a reel about respect.
 - **It does not have to be a film.** A meme, a gif, a plain photograph of the object or
   gesture being named — anything that makes the word visible. Films are a reliable source
   of iconic, recognisable frames, not a requirement.

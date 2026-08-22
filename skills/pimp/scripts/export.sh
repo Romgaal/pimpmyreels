@@ -61,6 +61,16 @@ if [ -n "$FROM" ]; then
       "$PROJ/out/reel.mp4" -loglevel error
   fi
   rm -f "$PROJ/out/span.mp4" "$PROJ/out/head.mp4" "$PROJ/out/concat.txt"
+  # The splice VERIFIES ITSELF. Even with -frames:v the assembled file has come out
+  # one frame short intermittently (1722 asked, 1721 delivered — encoder/concat edge
+  # behaviour). An optimisation that silently shifts every image after the cut is
+  # worse than no optimisation: on mismatch, fall back to a full render, loudly.
+  GOT=$(ffprobe -v error -select_streams v:0 -count_frames \
+        -show_entries stream=nb_read_frames -of default=nk=1:nw=1 "$PROJ/out/reel.mp4")
+  if [ "$GOT" != "$WANT" ]; then
+    echo "SPLICE DRIFTED ($GOT frames, mapping says $WANT) — falling back to FULL render"
+    (cd "$TPL" && npx remotion render ReelCutaways "$PROJ/out/reel.mp4")
+  fi
 else
   (cd "$TPL" && npx remotion render ReelCutaways "$PROJ/out/reel.mp4" $DRAFT)
 fi
