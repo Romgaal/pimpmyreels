@@ -102,12 +102,19 @@ Read `references/mapping-guide.md` (concept → validated iconic scenes) and
 - **Stay current.** Include **1–2 references from the last 2–3 years** when the topic
   allows (recent series, films, memes actually circulating), on top of the timeless
   classics. Ask the user what they're watching if you're unsure.
-- **Consider gifs** for reaction beats (`--gif`): panic, "no no no", "just do it".
-  One or two per reel, never more.
+- **Use 1–2 gifs per reel, not zero.** The pipeline is fully wired for them
+  (`--gif` sourcing with header+PIL validation, `<Gif>` rendering) and they have been
+  used exactly once across six real reels — a wired feature nobody uses is a missing
+  feature. Reaction beats are the spot: panic, "no no no", "just do it", an eye-roll.
+  Never more than two: motion is salt, not the dish.
 - **Mix punch and breath, roughly 50/50.** A wall of movie stills reads as noisy
   meme-spam. The reels that look premium alternate a *punch* (meme / iconic scene)
   with a *breath* (an atmospheric, cinematic, slightly surreal image). Plan both when
   you write the mapping — see the "Punch and breath" section of `mapping-guide.md`.
+
+**Read `~/.pimpmyreels/taste.md` first if it exists** — it is the record of every
+swap and rejection this user has made on past boards. A mapping that repeats a logged
+rejection is a wasted round-trip you chose to have.
 
 Write the plan as a table (timecode · word · film · why) before touching the network.
 
@@ -158,6 +165,13 @@ editorially wrong.
 
 **Never render before explicit human validation.**
 
+**Then write down what they swapped.** Append one line per decision to
+`~/.pimpmyreels/taste.md` — `rejected Indiana Jones for "courage": too old, wants
+modern` / `swapped in Vikings: watches it`. That file is the user's taste, learned
+the only way taste can be learned. It is not optional bookkeeping: the board gate
+exists because their choices beat yours, and the log is how their choices reach the
+NEXT reel's mapping instead of being re-litigated every time.
+
 ## 6. Write mapping.json
 
 **Generate the skeleton first — never hand-write fps or durationInFrames:**
@@ -206,6 +220,22 @@ The head of `out/reel.mp4` is kept (frame-accurate), only N→end is re-rendered
 Changing a single image is a two-number edit plus seconds of render, not a full
 re-export. (`--from` needs a previous full export; the manual equivalent lives in
 `references/golden-path.md`.)
+
+## 7b. The user re-edited their rush (re-cut)
+
+A shortened or re-ordered rush is a NEW timeline, not a tweak: every timecode is dead,
+and the speech may be restructured, not just trimmed. But the images survive — they
+were validated once and stay validated.
+
+1. New project folder, copy the old project's `img/` across.
+2. Re-transcribe (never reuse the old `words.json` — this is the whole point).
+3. Re-map the existing images onto the new word timings. Orphaned images (their
+   sentence was cut) are dropped; a surviving image may fit a DIFFERENT line better
+   than the one it originally illustrated — check.
+4. Skip sourcing and the board entirely unless the new cut contains new ideas.
+
+Cost of a re-cut handled this way: one transcription plus one render. No sourcing,
+no validation round-trip.
 
 ## 8. Prove it before delivering (BLOCKING GATE)
 

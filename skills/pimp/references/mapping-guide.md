@@ -125,3 +125,31 @@ Check the bank first (`--concept`), then invent — with the same bar: universal
 known, instantly readable, right register, no watermark. Anything you validate and
 ship is contributed back automatically, so the alternates grow on their own: the more
 the bank fills, the more variety it offers, not less.
+
+
+## Show the action, not a mood — and the caption test
+
+"Show, don't tell" at the image level means the frame performs the VERB of the
+sentence, not the topic of it:
+
+| Line | Tells (a mood) | Shows (the action) |
+|---|---|---|
+| "va aborder" | a confident face | someone mid-approach at a bar |
+| "inverse la dynamique" | a chess board | an arm-wrestle mid-flip |
+| "tu n'es pas en demande" | a sad man | Oliver Twist holding out the bowl |
+| "elle pose ses limites" | a stern portrait | a hand raised in a stop gesture |
+
+Portraits are the weakest cutaways: a face communicates a feeling in general, the
+action communicates THIS sentence.
+
+**The caption test, before every pick:** imagine the image with no words around it.
+If a stranger could not guess the word it illustrates within half a second, it fails —
+however beautiful, however famous. An ear says "listen". A wide poker table says
+nothing at matchbox size.
+
+## Enumerations are a burst
+
+When the script lists items — "ta posture, ta diction, ton vocabulaire, ton hygiène,
+ta culture" — cut one image PER ITEM at the word's own pace, even 0.5s each. The
+burst is the effect: the viewer feels the list physically. One image over a list
+reads as the narrator giving up.

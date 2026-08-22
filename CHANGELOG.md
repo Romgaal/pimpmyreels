@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.4.8 — taste is data, re-cuts are cheap, gifs are used
+
+- **`~/.pimpmyreels/taste.md`** — every board swap and rejection gets one logged line,
+  and the mapping step of the NEXT reel reads the file first. Six reels of decisions
+  were living only in conversation history; a mapping that repeats a logged rejection
+  is a wasted round-trip. Ships with nothing; grows with use.
+- **Re-cut workflow (7b).** A shortened rush is a new timeline: re-transcribe, re-map
+  the already-validated images, drop orphans, re-check fits. No sourcing, no board.
+  A real re-cut cost one transcription and one render.
+- **Show the action, not a mood** (mapping-guide): the frame performs the VERB of the
+  sentence — someone mid-approach beats a confident face. Portraits are the weakest
+  cutaways. Plus the caption test: no words around it, half a second, or reject.
+- **Enumerations are a burst**: one image per listed item at the word's own pace.
+- **Gifs: 1–2 per reel is now the target, not a suggestion** — the pipeline was fully
+  wired and used once across six reels.
+
 ## 0.4.7 — show every word, and only in close-up
 
 - **Density was wrong by a factor of three.** The method asked for one image per 4-6s
