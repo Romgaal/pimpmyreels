@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.9 — the collage owns the hook, and splices cannot drift
+
+- **The collage holds through the WHOLE hook line** — 3s is the floor, not the target.
+  A cutaway that fires mid-hook burns an image on words that belong to the collage
+  (a real reel had Rocky appear at 3.0s inside a 5.2s hook; the user caught it).
+- **Gifs render in their native aspect.** A 498x280 meme gif cover-cropped into a
+  square loses its text; set `"format": "landscape"` on wide gifs — the landscape
+  box (560x322, ratio .575) matches the classic meme ratio almost exactly.
+- **`--from` splices are now frame-exact, twice over.** The head was trimmed with
+  `-t` (seconds) and encoder rounding once produced a 233-frame head for 234 asked;
+  worse, re-splicing onto the drifted result compounded the loss (1722 -> 1721 ->
+  1720). The head is now cut with `-frames:v`, and --from refuses outright to splice
+  onto a base whose frame count no longer matches the mapping. Proven: full render
+  1722 -> splice -> still 1722.
+- taste.md grew a context rule: an image that worked for one line can be "nul" for
+  another — context outranks the image's own track record.
+
 ## 0.4.8 — taste is data, re-cuts are cheap, gifs are used
 
 - **`~/.pimpmyreels/taste.md`** — every board swap and rejection gets one logged line,

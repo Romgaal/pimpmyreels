@@ -136,6 +136,9 @@ filter enforces — atmospheric images are often 1:1 and would be rejected by th
 landscape filter. Pass `--format landscape` only for wide compositions you intend to
 display as landscape.
 
+Wide meme gifs (the classic 498x280 format) get `"format": "landscape"` in their
+segment — a square cover-crop amputates the meme's own text.
+
 Craft web queries per `references/query-guide.md` (it has a dedicated section for
 atmospheric images — they are searched by mood, not by film). Add `--gif` for
 animated memes.
@@ -194,7 +197,9 @@ Schema reference: `../../template/mapping.example.json`.
 - Open with a **collage** of 6 validated images — **no text on it**. The user adds
   titles and subtitles themselves (Captions app). Place it high enough to clear the
   speaker's face.
-- **The collage holds 3s minimum — it IS the hook.** The template enforces this
+- **The collage holds through the ENTIRE hook line — 3s is the floor, not the target.**
+  Find where the hook sentence ends in `words.json` and start the first cutaway there;
+  an image that fires mid-hook burns itself on words that belong to the collage. The template enforces this
   (`collageMinSeconds`), drops any cutaway swallowed underneath, and starts the next
   one exactly when the collage ends. So write your first cutaway's timecode from the
   words as usual and let the template resolve the opening; do not hand-shift it.

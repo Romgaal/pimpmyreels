@@ -33,12 +33,22 @@ LAST=$(python3 -c "import json;print(json.load(open('$PROJ/mapping.json'))['dura
 
 if [ -n "$FROM" ]; then
   [ -f "$PROJ/out/reel.mp4" ] || { echo "ERROR: --from needs an existing out/reel.mp4 (run a full export first)"; exit 1; }
+  # Never splice onto a drifted base: two consecutive splices once compounded a
+  # one-frame loss into two (1722 -> 1721 -> 1720), shifting every image after the
+  # cut. If the existing reel does not match the mapping exactly, re-render fully.
+  HAVE=$(ffprobe -v error -select_streams v:0 -count_frames \
+         -show_entries stream=nb_read_frames -of default=nk=1:nw=1 "$PROJ/out/reel.mp4")
+  WANT=$(python3 -c "import json;print(json.load(open('$PROJ/mapping.json'))['durationInFrames'])")
+  [ "$HAVE" = "$WANT" ] || { echo "ERROR: out/reel.mp4 has $HAVE frames, mapping says $WANT — drifted base, run a FULL export first"; exit 1; }
   [ -n "$DRAFT" ] && { echo "ERROR: --from and --draft don't mix (the head keeps full quality)"; exit 1; }
   CUT=$(python3 -c "print($FROM/$FPS)")
   echo "== partial render: frames $FROM-$LAST (head kept up to ${CUT}s) =="
   (cd "$TPL" && npx remotion render ReelCutaways "$PROJ/out/span.mp4" --frames="$FROM-$LAST")
   # Head: frame-accurate trim needs a re-encode (stream-copy only cuts on keyframes).
-  ffmpeg -y -i "$PROJ/out/reel.mp4" -t "$CUT" \
+  # Trim the VIDEO by frame count, not seconds: -t $CUT once produced a 233-frame head
+  # where 234 were asked (encoder rounding), silently shifting everything after the
+  # splice by one frame. -frames:v is exact; -t stays for the audio only.
+  ffmpeg -y -i "$PROJ/out/reel.mp4" -frames:v "$FROM" -t "$CUT" \
     -c:v libx264 -crf 15 -preset veryfast -pix_fmt yuv420p -c:a aac -b:a 256k \
     -video_track_timescale 90000 "$PROJ/out/head.mp4" -loglevel error
   mv "$PROJ/out/reel.mp4" "$PROJ/out/reel.prev.mp4"
