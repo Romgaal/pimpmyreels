@@ -20,6 +20,18 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# BLOCKING: no watermarked image ships. An image tiled with "ultimateapparels.com"
+# reached a user's reel twice because it was only ever seen at thumbnail size. The
+# check reads the text in each image; it is fast and it refuses, it does not warn.
+if [ -d "$PROJ/img" ] && [ -z "$PIMP_SKIP_WATERMARK" ]; then
+  if ! python3 "$(dirname "$0")/detect_watermark.py" "$PROJ/img" > /tmp/pmr_wm.txt 2>&1; then
+    echo "REFUSING to export — watermarked image(s):"
+    grep FILIGRANE /tmp/pmr_wm.txt | sed 's/^/  /'
+    echo "  Replace them, or set PIMP_SKIP_WATERMARK=1 to override deliberately."
+    exit 1
+  fi
+fi
+
 # Stage the project into the template (mapping + assets)
 rm -rf "$TPL/public/project"
 mkdir -p "$TPL/public/project"

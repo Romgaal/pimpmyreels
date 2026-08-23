@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.5.0 — no watermarked image can be exported
+
+- **`detect_watermark.py` (new), wired as a BLOCKING gate in `export.sh`.** An image
+  tiled with "ultimateapparels.com" reached a user's reel twice. It was judged on a
+  contact sheet at ~250px, where a faint repeated overlay is invisible — so the fix is
+  not "look harder", it is a check that runs on every export and refuses.
+- **It reads the text; it does not guess at pixels.** Two autocorrelation heuristics
+  were written and dropped first: plain, it scored 1 true positive against 7 false;
+  with JPEG block harmonics excluded, 2 against 7. Detecting periodicity cannot tell a
+  stamp from compression. OCR on a HIGH-PASSED copy can — subtracting a blur strips the
+  photograph and leaves the stamp's strokes, and tesseract returns "drels.cOn",
+  "apparel", ".com". Autocontrast alone read nothing: a 15%-opacity overlay is a
+  frequency problem, not a contrast one.
+- A "repeated token" second signal was also dropped — it fired on a still of a LIFE
+  magazine cover, whose repeated printed word is content. The domain/brand match alone
+  is precise.
+- **Measured:** 1/21 on the reel (exactly the guilty one), 3/29 on a wider sample —
+  ultimateapparels, RareFilm.Net and stablediffusionweb, all three real — zero false
+  positives. On the very next sourcing round it caught 2 of 3 fresh candidates carrying
+  the same stamp. Needs tesseract; without it the script says so instead of passing
+  images as clean. `PIMP_SKIP_WATERMARK=1` overrides deliberately.
+
 ## 0.4.11 — the board shows the whole file, not just the crop
 
 - **A three-panel montage shipped to a user.** Not because the board failed — because

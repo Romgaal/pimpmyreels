@@ -164,7 +164,9 @@ thumbnail hides what the file is. A stacked three-panel montage shipped to a use
 because an ad-hoc square-cropped sheet showed only its middle panel, which looked fine.
 Structure and framing must be judged in the same glance.
 
-Reject, by number: watermarks and source logos, black bars, posters instead of scene
+Run `python3 scripts/detect_watermark.py <project>/candidates/<beat>` on anything you
+are about to keep — a tiled stamp is invisible at board size and `export.sh` will
+refuse the render anyway. Reject, by number: watermarks and source logos, black bars, posters instead of scene
 stills, AI-looking renders, and anything that isn't the scene you asked for. Re-source
 the rejected beats with a better query; if a domain keeps polluting results,
 `python3 scripts/source_images.py --reject <domain>` teaches the blocklist. Rebuild
