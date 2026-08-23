@@ -158,6 +158,12 @@ This builds a single numbered sheet: row = beat, columns = candidates, labelled
 **Read that one sheet.** Never open candidate files one by one — it costs ~20× more
 for the same information.
 
+**Use `build_board.py` — do not hand-roll a contact sheet that centre-crops.** The board
+shows each candidate WHOLE with the displayed square outlined, on purpose: a cropped
+thumbnail hides what the file is. A stacked three-panel montage shipped to a user
+because an ad-hoc square-cropped sheet showed only its middle panel, which looked fine.
+Structure and framing must be judged in the same glance.
+
 Reject, by number: watermarks and source logos, black bars, posters instead of scene
 stills, AI-looking renders, and anything that isn't the scene you asked for. Re-source
 the rejected beats with a better query; if a domain keeps polluting results,

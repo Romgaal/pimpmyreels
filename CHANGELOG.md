@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.11 — the board shows the whole file, not just the crop
+
+- **A three-panel montage shipped to a user.** Not because the board failed — because
+  the board was bypassed: an ad-hoc contact sheet that centre-cropped each candidate
+  showed only the montage's middle panel, which looked like a fine abstract image.
+  `build_board.py` now outlines the square the renderer will actually display ON TOP of
+  the whole image, so structure and framing are judged in one glance; a stacked montage
+  and a framed poster-on-a-wall are both unmistakable. The method now forbids hand-rolled
+  cropped sheets.
+- **A useful panel inside a montage gets cut out** rather than the whole thing rejected:
+  the third panel of that Hail Mary image was exactly the shot the user had asked for.
+
 ## 0.4.10 — a famous meme can tell the wrong story
 
 - **Check what a reference NARRATES, not just whether it is recognised.** The

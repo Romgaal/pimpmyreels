@@ -36,6 +36,15 @@ for r, b in enumerate(beats):
             if nw >= CW:
                 im = im.crop(((nw - CW) // 2, 0, (nw - CW) // 2 + CW, CH))
             sheet.paste(im, (x, y + PAD))
+            # Outline the square the renderer will actually show. Judging a candidate
+            # on its crop alone hides what the FILE is: a stacked 3-panel montage
+            # shipped once because the centre panel filled the crop and looked fine.
+            # Full image + crop box together: framing and structure, one glance.
+            side = min(nw, CH)
+            cx = x + (min(nw, CW) - side) // 2
+            d.rectangle([cx, y + PAD + (CH - side) // 2,
+                         cx + side, y + PAD + (CH - side) // 2 + side],
+                        outline=(255, 205, 80), width=2)
         except Exception:
             pass
         d.rectangle([x, y + PAD, x + 30, y + PAD + 20], fill=(0, 0, 0))
