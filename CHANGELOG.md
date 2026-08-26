@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0 — mode 2: the images become the stage
+
+- **`"mode": "background"`** — for a rush delivered as a CUTOUT (speaker on
+  transparency): the person floats small and centred, and the images fill the frame
+  behind in gap-less grids of 1 (fullscreen), 2 (stacked halves), 3 (band + quadrants)
+  or 4 (2x2). Hook = 4-grid, then free. Modelled on the immersive competitor format.
+- **Auto-detected**: `init_mapping.sh` reads the rush's pixel format and flips the mode
+  when it finds an alpha channel (ProRes 4444 / VP9; conversion commands documented for
+  green screen and HEVC-alpha). `speakerScale`/`speakerX`/`speakerY` tune the cutout.
+- **`--format portrait`** in sourcing: background cells are 9:16/9:8 and the aspect
+  gate now admits tall/square sources only for them.
+- Proven on a synthetic alpha rush: the three layouts render exactly, the cutout
+  composites with real transparency above every background, 90/90 frames.
+
 ## 0.5.0 — no watermarked image can be exported
 
 - **`detect_watermark.py` (new), wired as a BLOCKING gate in `export.sh`.** An image

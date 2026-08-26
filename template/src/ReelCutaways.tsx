@@ -13,6 +13,7 @@ type Seg = {
 	images?: string[];
 	format?: string;
 	align?: string;
+	speaker?: {scale?: number; x?: number; y?: number};
 };
 
 const Media: React.FC<{src: string; style: React.CSSProperties}> = ({src, style}) =>
@@ -128,7 +129,90 @@ const COLLAGE_MIN_SECONDS = 3;
 // and no hole between the collage and the first real image.
 const MIN_CUT_SECONDS = 1;
 
+// ---- Mode 2: "background" — the speaker is a CUTOUT (alpha video), centred and
+// small, and the images fill the frame behind. Modelled on the immersive reels
+// format: a 4-image grid on the hook, then 1/2/3/4 per beat, edge to edge, hard cuts.
+// The rush must carry real alpha (ProRes 4444 .mov or VP9 .webm) — init_mapping.sh
+// detects it and sets mode automatically. Text stays absent: Captions adds it after.
+
+const CELL: React.CSSProperties = {overflow: 'hidden', position: 'relative'};
+const COVER: React.CSSProperties = {
+	position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+};
+
+const BgGrid: React.FC<{images: string[]}> = ({images}) => {
+	const n = Math.max(1, Math.min(4, images.length));
+	const imgs = images.slice(0, n);
+	if (n === 1)
+		return (
+			<AbsoluteFill style={CELL}>
+				<Media src={imgs[0]} style={COVER} />
+			</AbsoluteFill>
+		);
+	if (n === 2)
+		return (
+			<AbsoluteFill style={{display: 'grid', gridTemplateRows: '1fr 1fr'}}>
+				{imgs.map((im, i) => (
+					<div key={i} style={CELL}><Media src={im} style={COVER} /></div>
+				))}
+			</AbsoluteFill>
+		);
+	if (n === 3)
+		// One full-width band on top, two quadrants below.
+		return (
+			<AbsoluteFill style={{display: 'grid', gridTemplateRows: '1fr 1fr'}}>
+				<div style={CELL}><Media src={imgs[0]} style={COVER} /></div>
+				<div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}>
+					<div style={CELL}><Media src={imgs[1]} style={COVER} /></div>
+					<div style={CELL}><Media src={imgs[2]} style={COVER} /></div>
+				</div>
+			</AbsoluteFill>
+		);
+	return (
+		<AbsoluteFill
+			style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr'}}
+		>
+			{imgs.map((im, i) => (
+				<div key={i} style={CELL}><Media src={im} style={COVER} /></div>
+			))}
+		</AbsoluteFill>
+	);
+};
+
+const BackgroundMode: React.FC = () => {
+	const segs = mapping.segments as Seg[];
+	const {durationInFrames} = mapping;
+	const mScale = (mapping as {speakerScale?: number}).speakerScale ?? 0.45;
+	const mX = (mapping as {speakerX?: number}).speakerX ?? 0.5;
+	const mY = (mapping as {speakerY?: number}).speakerY ?? 0.4;
+	return (
+		<AbsoluteFill style={{backgroundColor: '#000'}}>
+			{segs.map((seg, i) => {
+				const end = seg.end ?? segs[i + 1]?.start ?? durationInFrames;
+				const images = seg.images ?? (seg.image ? [seg.image] : []);
+				if (end <= seg.start || images.length === 0) return null;
+				return (
+					<Sequence key={i} from={seg.start} durationInFrames={end - seg.start}>
+						<BgGrid images={images} />
+					</Sequence>
+				);
+			})}
+			{/* The cutout speaker rides ABOVE every background, uninterrupted. Per-beat
+			    repositioning exists (segments with only `speaker`) but the default is
+			    one steady placement — the references never bounce the person around. */}
+			<AbsoluteFill
+				style={{
+					transform: `translate(${(mX - 0.5) * mapping.width}px, ${(mY - 0.5) * mapping.height}px) scale(${mScale})`,
+				}}
+			>
+				<OffthreadVideo src={staticFile(mapping.rush)} transparent />
+			</AbsoluteFill>
+		</AbsoluteFill>
+	);
+};
+
 export const ReelCutaways: React.FC = () => {
+	if ((mapping as {mode?: string}).mode === 'background') return <BackgroundMode />;
 	const segs = mapping.segments as Seg[];
 	const top = (mapping as {imageTop?: number}).imageTop ?? 310;
 	const shadow = (mapping as {imageShadow?: boolean}).imageShadow === true;

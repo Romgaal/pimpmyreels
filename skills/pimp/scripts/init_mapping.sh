@@ -19,7 +19,7 @@ import json, os, subprocess
 rush, proj = os.environ['RUSH'], os.environ['PROJ']
 p = subprocess.run(
     ['ffprobe', '-v', 'error', '-select_streams', 'v:0',
-     '-show_entries', 'stream=r_frame_rate,avg_frame_rate,width,height,nb_frames,start_time',
+     '-show_entries', 'stream=r_frame_rate,avg_frame_rate,width,height,nb_frames,start_time,pix_fmt',
      '-show_entries', 'stream_side_data=rotation',
      '-show_entries', 'format=duration', '-of', 'json', rush],
     capture_output=True, text=True, check=True)
@@ -70,6 +70,10 @@ duration = float(d['format']['duration'])
 # clipping the last frame of the reel.
 nbf = st.get('nb_frames')
 frames = int(nbf) if nbf and str(nbf).isdigit() else round(duration * fps)
+# A cutout rush (person on transparency) carries an alpha channel — that IS mode 2:
+# the speaker floats over full-frame background images instead of images floating
+# over the speaker. Detected, never asked.
+alpha = 'a' in (st.get('pix_fmt') or '').replace('yuv', '').replace('gbr', '')
 mapping = {
     'rush': 'project/' + os.path.basename(rush),
     'fps': fps,
@@ -81,6 +85,14 @@ mapping = {
     'imageShadow': False,
     'segments': [],
 }
+if alpha:
+    mapping['mode'] = 'background'
+    mapping['speakerScale'] = 0.45
+    mapping['speakerX'] = 0.5
+    mapping['speakerY'] = 0.4
+    print(f"ALPHA channel detected ({st['pix_fmt']}) -> mode: background (speaker cutout "
+          f"over full-frame images). Fill `segments` with images arrays: 4 on the hook, "
+          f"then 1/2/3/4 per beat.")
 json.dump(mapping, open(os.path.join(proj, 'mapping.json'), 'w'), indent=1)
 print(f"mapping.json: fps={fps}  {st['width']}x{st['height']}  "
       f"duration={duration:.2f}s  durationInFrames={frames}")

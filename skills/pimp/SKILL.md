@@ -325,6 +325,35 @@ Close with hook advice from `references/hooks.md` — advisory only, never block
 
 ---
 
+## Mode 2 — full-frame backgrounds (cutout rush)
+
+When the rush is the speaker CUT OUT on transparency, the format flips: the person
+floats small and centred, and the images fill the whole frame behind them.
+`init_mapping.sh` detects the alpha channel and sets `"mode": "background"` on its
+own — you never ask.
+
+- **Rush**: must carry real alpha — ProRes 4444 `.mov` or VP9 `.webm`. A green-screen
+  or HEVC-alpha export converts first:
+  `ffmpeg -i cutout.mov -c:v prores_ks -profile:v 4444 -pix_fmt yuva444p10le rush.mov`
+  (green screen: insert `-vf "chromakey=0x00FF00:0.12:0.05"` before `-c:v`).
+- **Each segment carries an `images` ARRAY (1-4)**, not a single image. Layouts are
+  fixed: 1 = fullscreen, 2 = stacked halves, 3 = top band + two quadrants, 4 = 2x2
+  grid. Edge to edge, no gap, hard cuts — same rules as ever.
+- **The hook is a 4-grid.** After it, no rule: 1, 2 or 4 per beat as the words demand.
+  A single strong image fullscreen breathes; a 4-grid punches.
+- **Source with `--format portrait`** — cells are 9:16 or 9:8, and a wide still
+  cover-cropped to portrait loses most of itself. Ambiance-first reads best at full
+  bleed (offices, skies, streets, close objects); precise film stills still work when
+  their subject is central.
+- **Speaker placement**: `speakerScale` (default 0.45), `speakerX`/`speakerY`
+  (defaults 0.5/0.40) in mapping.json. One steady placement — the reference reels
+  never bounce the person around.
+- **Safe zones do not apply to the backgrounds** (they are full-bleed by design, like
+  the reference reels); the speaker default keeps them clear of platform UI. Still
+  zero text: titles and subtitles stay the user's job (Captions).
+- Everything else is unchanged: transcribe first, word-synced starts, the board gate,
+  the watermark gate, the proofs.
+
 ## Anti-patterns
 
 The 15 mistakes that were actually made building this pipeline, and the rule each one

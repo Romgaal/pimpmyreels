@@ -143,9 +143,15 @@ def fits(im, fmt):
     """Aspect gate driven by how the image will be DISPLAYED.
     square  : 0.8-2.0 — a square or mildly wide shot crops cleanly to 1:1. Mood and
               artistic images are often square/portrait and must not be rejected.
-    landscape: >=1.2 — wide compositions only."""
+    landscape: >=1.2 — wide compositions only.
+    portrait: <=1.1 — mode-2 backgrounds fill 9:16 cells; a wide still cover-cropped
+              to portrait loses most of itself, so only tall/square sources qualify."""
     r = im.width / im.height
-    return r >= 1.2 if fmt == 'landscape' else 0.8 <= r <= 2.0
+    if fmt == 'landscape':
+        return r >= 1.2
+    if fmt == 'portrait':
+        return r <= 1.1
+    return 0.8 <= r <= 2.0
 
 
 def scrape(q, out, n, gif, fmt='square'):
@@ -205,7 +211,8 @@ if __name__ == '__main__':
                          'from the web, so every board offers fresh options. Use '
                          '--bank-max 3 to work offline from the bank only.')
     ap.add_argument('--format', dest='fmt', choices=['square', 'landscape'], default='square',
-                    help='intended display format — drives the aspect filter (default square)')
+                    help='intended display format: square, landscape or portrait '
+                         '(mode-2 backgrounds) — drives the aspect filter (default square)')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
     a = ap.parse_args()
