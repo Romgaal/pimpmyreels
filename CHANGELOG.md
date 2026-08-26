@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.2 — source inside the script's world
+
+- **The master rule for backgrounds, learned over three rejected passes**: show the
+  SITUATION the script describes, not an image *about* the idea. A sprinter on a track
+  for "a bolder guy than you", Superman for "you're an introvert", a white dress in a
+  forest for "the pure-princess myth", a plated table for "she's interested" — each was
+  a three-step inference that does not survive half a second on screen. Name the world
+  the script lives in (here: bars, clubs, parties, people approaching each other) and
+  source inside it. Metaphor is the exception for beats the world cannot show.
+- **Judge candidates with the speaker composited over the full-bleed crop.** A cliff
+  jumper shipped that the cutout covered entirely — invisible on any board that shows
+  the image alone.
+- **A wide shot is unusable in mode 2 too**: full bleed does not rescue a small subject,
+  it enlarges the emptiness around it.
+
 ## 0.7.1 — metaphor means a human moment, not a texture
 
 - **Mode-2 art direction, corrected after over-correcting.** Rejecting bad stock, the

@@ -347,6 +347,14 @@ own — you never ask.
   no sense" — and two carried a "Magnific" watermark grid that the watermark gate does
   not know and could not read. A clean source is the only reliable defence; the gate is
   a net, not a guarantee.
+- **SHOW THE WORLD THE SCRIPT LIVES IN — that beats any metaphor.** Three passes were
+  burned choosing images that were *about* the idea instead of showing the situation:
+  a sprinter on a track for "a bolder guy than you", Superman for "you're an introvert",
+  a white dress in a forest for "the pure-princess myth", a plated table for "she's
+  interested". A seduction script lives in bars, clubs, parties, people approaching each
+  other — so that is what the backgrounds must be. Read the script, name its WORLD, and
+  source inside it. Metaphor is the exception you reach for when the world has no image
+  for that beat, never the default.
 - **METAPHOR MEANS A HUMAN MOMENT, NOT A TEXTURE.** The second mode-2 pass swung from
   bad stock to macro objects — red silk for "desire", coffee cups for "she talks to
   you", lace for "the pure princess myth", cubes, a suit sleeve — and the user rejected
@@ -363,8 +371,13 @@ own — you never ask.
 - **Leave the MIDDLE free — that is where the user's subtitles go.** Default the
   speaker to the upper third (`speakerY` 0.26, `speakerScale` 0.36), as the reference
   reels do: person small and high, captions across the centre, background everywhere.
-- **MOVE THE SPEAKER.** Each segment takes `speaker: {x, y, scale}` (defaults 0.5 /
-  0.26 / 0.36, normalised). A fixed centre cutout masks the very subject being
+- **MOVE THE SPEAKER, AND CHECK IT ON THE BOARD.** Each segment takes
+  `speaker: {x, y, scale}` (defaults 0.5 / 0.26 / 0.36, normalised). Judge candidates
+  on a board that composites the cutout over the full-bleed crop — otherwise you ship a
+  cliff jumper the speaker covers entirely, which happened. Subject centre-left → push
+  the speaker to x 0.68, subject right → x 0.30.
+- **A background whose subject is small is unusable**, exactly as in mode 1: full-bleed
+  does not rescue a wide shot, it just enlarges the emptiness around a tiny figure. A fixed centre cutout masks the very subject being
   illustrated — a statue, a face, a rose. Read each background and push the speaker to
   the empty side: subject centre-left → x 0.65, subject low → y 0.30, and so on.
 - **Source with `--format portrait --engine unsplash`** — cells are 9:16 or 9:8, and a
