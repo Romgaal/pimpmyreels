@@ -191,7 +191,11 @@ def scrape(q, out, n, gif, fmt='square', engine='auto'):
             got.append({'path': dst, 'source': 'cache'})
         return got
     os.makedirs(cache, exist_ok=True)
-    engines = ((engine_unsplash, engine_bing, engine_ddg) if engine == 'unsplash'
+    # 'unsplash' means ONLY unsplash. Falling back to the scrape is how 16 of 26
+    # backgrounds on a real reel came from the open web — watermarked AI stock the
+    # user rejected on sight. A clean source silently topped up from a dirty one is
+    # a dirty source. Empty result > slop.
+    engines = ((engine_unsplash,) if engine == 'unsplash'
                else (engine_bing, engine_ddg))
     for eng in engines:
         if len(got) >= n:

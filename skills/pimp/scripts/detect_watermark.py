@@ -12,6 +12,14 @@ Reading the text does.
 
 Needs tesseract (`brew install tesseract`). Without it the script says so and exits 0
 rather than pretending the images are clean.
+
+KNOWN LIMIT, learned the hard way: this is a brand/domain matcher, and a stamp whose
+word is not on the list passes. A "Magnific" grid (an AI upscaler) shipped in a reel
+while this reported 0/33 — the OCR could not even resolve the glyphs at thumbnail
+scale. Token-repetition was tried as a brand-independent second signal and measured
+useless on the same image (top token count: 1). Treat this as a net, never as a
+guarantee. The real defence is the SOURCE: use `--engine unsplash` for ambiance and
+background work, where watermarks do not exist by construction.
 """
 import os
 import re
@@ -27,7 +35,7 @@ from PIL import Image, ImageFilter, ImageOps
 # classic m->n misread), and known stock brands.
 MARKS = re.compile(
     r'(\.co[mn]\b|\.ne[tf]\b|www\.|shutterstock|alamy|getty|istock|dreamstime'
-    r'|depositphotos|123rf|adobestock|stablediffusion|rarefilm|apparel|fineart|pixels\.com)',
+    r'|depositphotos|123rf|adobestock|stablediffusion|rarefilm|apparel|fineart|pixels\.com|magnific|upscayl|topaz)',
     re.I)
 
 

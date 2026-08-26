@@ -341,6 +341,20 @@ own — you never ask.
   grid. Edge to edge, no gap, hard cuts — same rules as ever.
 - **The hook is a 4-grid.** After it, no rule: 1, 2 or 4 per beat as the words demand.
   A single strong image fullscreen breathes; a 4-grid punches.
+- **Backgrounds are Unsplash ONLY — never the scrape.** `--engine unsplash` no longer
+  falls back: an empty result beats slop. On the first mode-2 reel, 16 of 26 backgrounds
+  came from the scrape and the user rejected every one of them — "old stock, no depth,
+  no sense" — and two carried a "Magnific" watermark grid that the watermark gate does
+  not know and could not read. A clean source is the only reliable defence; the gate is
+  a net, not a guarantee.
+- **Prefer metaphors Unsplash photographs beautifully over staged scenes it does not.**
+  "couple talking in a café" returns stock actors; "two cups, hard shadow, overhead"
+  returns design. Red silk for desire, a lit window at the end of a dark corridor for
+  absence, a spiral library for culture, iron filings for magnetism.
+- **MOVE THE SPEAKER.** Each segment takes `speaker: {x, y, scale}` (defaults 0.5 /
+  0.40 / 0.45, normalised). A fixed centre cutout masks the very subject being
+  illustrated — a statue, a face, a rose. Read each background and push the speaker to
+  the empty side: subject centre-left → x 0.65, subject low → y 0.30, and so on.
 - **Source with `--format portrait --engine unsplash`** — cells are 9:16 or 9:8, and a
   wide still cover-cropped to portrait loses most of itself. Unsplash is the right
   engine for ambiance and metaphor (design photography, no watermarks, no AI slop);

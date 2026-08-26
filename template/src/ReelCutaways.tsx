@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, OffthreadVideo, Sequence, staticFile} from 'remotion';
+import {AbsoluteFill, Img, OffthreadVideo, Sequence, staticFile, useCurrentFrame} from 'remotion';
 import {Gif} from '@remotion/gif';
 import mapping from '../mapping.json';
 
@@ -179,6 +179,25 @@ const BgGrid: React.FC<{images: string[]}> = ({images}) => {
 	);
 };
 
+const Speaker: React.FC<{segs: Seg[]; d: {scale: number; x: number; y: number}}> = ({segs, d}) => {
+	const frame = useCurrentFrame();
+	// Last segment that has started, and whose own placement wins over the default.
+	let cur = d;
+	for (const s of segs) {
+		if (s.start > frame) break;
+		if (s.speaker) cur = {...d, ...s.speaker};
+	}
+	return (
+		<AbsoluteFill
+			style={{
+				transform: `translate(${(cur.x - 0.5) * mapping.width}px, ${(cur.y - 0.5) * mapping.height}px) scale(${cur.scale})`,
+			}}
+		>
+			<OffthreadVideo src={staticFile(mapping.rush)} transparent />
+		</AbsoluteFill>
+	);
+};
+
 const BackgroundMode: React.FC = () => {
 	const segs = mapping.segments as Seg[];
 	const {durationInFrames} = mapping;
@@ -197,16 +216,13 @@ const BackgroundMode: React.FC = () => {
 					</Sequence>
 				);
 			})}
-			{/* The cutout speaker rides ABOVE every background, uninterrupted. Per-beat
-			    repositioning exists (segments with only `speaker`) but the default is
-			    one steady placement — the references never bounce the person around. */}
-			<AbsoluteFill
-				style={{
-					transform: `translate(${(mX - 0.5) * mapping.width}px, ${(mY - 0.5) * mapping.height}px) scale(${mScale})`,
-				}}
-			>
-				<OffthreadVideo src={staticFile(mapping.rush)} transparent />
-			</AbsoluteFill>
+			{/* The cutout speaker rides ABOVE every background as ONE continuous video —
+			    never re-mounted, so the performance never stutters. But it MOVES: a
+			    fixed centre mask whatever the background is showing, and on a beat whose
+			    subject sits centre-frame the speaker covers exactly the thing being
+			    illustrated. Each segment may carry `speaker: {scale, x, y}`; the active
+			    one is picked from the current frame. */}
+			<Speaker segs={segs} d={{scale: mScale, x: mX, y: mY}} />
 		</AbsoluteFill>
 	);
 };

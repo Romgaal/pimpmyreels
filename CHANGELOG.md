@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.0 — the source is the defence, and the speaker moves
+
+- **`--engine unsplash` no longer falls back to the scrape.** An empty result beats
+  slop. On the first mode-2 reel 16 of 26 backgrounds came from the scrape and the user
+  rejected all of them ("old stock, no depth, no sense"); two carried a tiled "Magnific"
+  watermark that the gate missed — the word was not on its brand list and tesseract
+  cannot resolve those glyphs at all. Three heuristics have now been tried on that gate
+  and its documented status is: a net, never a guarantee. The source is the defence.
+- **The speaker MOVES.** `speaker: {x, y, scale}` per segment, resolved from the current
+  frame so the cutout video is never re-mounted and never stutters. A fixed centre
+  cutout masks the very subject it is meant to illustrate — the user caught it. 14 of
+  16 beats on the reference reel now place the speaker on the empty side.
+- **Art direction for mode 2 written down**: metaphors Unsplash photographs beautifully
+  (red silk for desire, two cups under hard shadow for "she talks to you", a lit window
+  down a dark corridor for absence, a spiral library for culture, iron filings for
+  magnetism) beat staged scenes it renders as stock actors.
+
 ## 0.6.1 — Unsplash as the ambiance engine
 
 - **`--engine unsplash`** in `source_images.py`: design-grade original photography for
