@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.7.1 — metaphor means a human moment, not a texture
+
+- **Mode-2 art direction, corrected after over-correcting.** Rejecting bad stock, the
+  first fix swung to macro objects — red silk for "desire", coffee cups for "she talks
+  to you", lace, cubes, a suit sleeve — and the user rejected that just as hard. Fabric
+  does not say desire. What works: **recognisable moments that tell a story** (Drake
+  refusing, Gandalf's bridge, Clark Kent's shirt, an Uno reverse) and **cinematic human
+  scenes with depth** (a woman meeting your eye on a neon street, a silhouette walking
+  away in the rain). Query Unsplash in that register, never "red silk fabric macro".
+- **An image validated at 41% is not automatically valid full-frame.** Two proved it in
+  one pass: a green-screen "JUST DO IT" gif (invisible small, a green wall large) and a
+  flat cartoon Cinderella (charming small, a slab of cyan large). Reused references are
+  re-judged at full bleed.
+- **The middle band belongs to the user's subtitles.** Speaker defaults move to the
+  upper third (`speakerY` 0.26, `speakerScale` 0.36), matching the reference reels:
+  person small and high, captions across the centre, background everywhere.
+
 ## 0.7.0 — the source is the defence, and the speaker moves
 
 - **`--engine unsplash` no longer falls back to the scrape.** An empty result beats

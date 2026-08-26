@@ -347,12 +347,24 @@ own — you never ask.
   no sense" — and two carried a "Magnific" watermark grid that the watermark gate does
   not know and could not read. A clean source is the only reliable defence; the gate is
   a net, not a guarantee.
-- **Prefer metaphors Unsplash photographs beautifully over staged scenes it does not.**
-  "couple talking in a café" returns stock actors; "two cups, hard shadow, overhead"
-  returns design. Red silk for desire, a lit window at the end of a dark corridor for
-  absence, a spiral library for culture, iron filings for magnetism.
+- **METAPHOR MEANS A HUMAN MOMENT, NOT A TEXTURE.** The second mode-2 pass swung from
+  bad stock to macro objects — red silk for "desire", coffee cups for "she talks to
+  you", lace for "the pure princess myth", cubes, a suit sleeve — and the user rejected
+  all of it just as hard: fabric does not say desire. What works is what has always
+  worked here: **recognisable moments that tell a story** (Drake refusing, Gandalf's
+  bridge, Clark Kent's shirt, an Uno reverse) and **cinematic human scenes with depth**
+  (a woman meeting your eye on a neon street, a silhouette walking away in the rain, a
+  suited man arms crossed, a cliff jumper). Query Unsplash in that register —
+  "woman confident eye contact night city cinematic", not "red silk fabric macro".
+- **An image validated at 41% is NOT automatically valid full-frame.** Two shipped that
+  way and both failed: a green-screen "JUST DO IT" gif (a green square is invisible at
+  41%, a green wall at 100%) and a flat cartoon Cinderella (charming small, a slab of
+  cyan large). Re-judge every reused reference at full bleed.
+- **Leave the MIDDLE free — that is where the user's subtitles go.** Default the
+  speaker to the upper third (`speakerY` 0.26, `speakerScale` 0.36), as the reference
+  reels do: person small and high, captions across the centre, background everywhere.
 - **MOVE THE SPEAKER.** Each segment takes `speaker: {x, y, scale}` (defaults 0.5 /
-  0.40 / 0.45, normalised). A fixed centre cutout masks the very subject being
+  0.26 / 0.36, normalised). A fixed centre cutout masks the very subject being
   illustrated — a statue, a face, a rose. Read each background and push the speaker to
   the empty side: subject centre-left → x 0.65, subject low → y 0.30, and so on.
 - **Source with `--format portrait --engine unsplash`** — cells are 9:16 or 9:8, and a

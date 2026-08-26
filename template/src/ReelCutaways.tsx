@@ -201,9 +201,10 @@ const Speaker: React.FC<{segs: Seg[]; d: {scale: number; x: number; y: number}}>
 const BackgroundMode: React.FC = () => {
 	const segs = mapping.segments as Seg[];
 	const {durationInFrames} = mapping;
-	const mScale = (mapping as {speakerScale?: number}).speakerScale ?? 0.45;
+	const mScale = (mapping as {speakerScale?: number}).speakerScale ?? 0.36;
 	const mX = (mapping as {speakerX?: number}).speakerX ?? 0.5;
-	const mY = (mapping as {speakerY?: number}).speakerY ?? 0.4;
+	// Upper third by default: the middle band is where the user's subtitles go.
+	const mY = (mapping as {speakerY?: number}).speakerY ?? 0.26;
 	return (
 		<AbsoluteFill style={{backgroundColor: '#000'}}>
 			{segs.map((seg, i) => {

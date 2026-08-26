@@ -87,9 +87,9 @@ mapping = {
 }
 if alpha:
     mapping['mode'] = 'background'
-    mapping['speakerScale'] = 0.45
+    mapping['speakerScale'] = 0.36
     mapping['speakerX'] = 0.5
-    mapping['speakerY'] = 0.4
+    mapping['speakerY'] = 0.26
     print(f"ALPHA channel detected ({st['pix_fmt']}) -> mode: background (speaker cutout "
           f"over full-frame images). Fill `segments` with images arrays: 4 on the hook, "
           f"then 1/2/3/4 per beat.")
