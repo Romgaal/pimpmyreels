@@ -179,6 +179,10 @@ editorially wrong.
 
 **Never render before explicit human validation.**
 
+**Source one image FOR one sentence — never a pool you then distribute.** Filling slots
+from a shared pool is what produces the same face three times and generic wallpaper on
+half the beats; `export.sh` refuses the export outright if a single-image beat repeats.
+
 **Then write down what they swapped.** Append one line per decision to
 `~/.pimpmyreels/taste.md` — `rejected Indiana Jones for "courage": too old, wants
 modern` / `swapped in Vikings: watches it`. That file is the user's taste, learned
@@ -295,6 +299,9 @@ for f in rush.mp4 out/reel.mp4; do
     -show_entries format=duration -of default=noprint_wrappers=1 "$f"
 done
 ```
+
+**Check the file's modification time**: a failed render exits 0 and leaves the previous
+export in place, where a matching frame count makes a 90-minute-old file look fresh.
 
 Frame count and duration must match. If they don't, the mapping's `fps` or
 `durationInFrames` is wrong — regenerate with `init_mapping.sh`, never patch by hand.

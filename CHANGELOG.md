@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.8.0 — one image is sourced FOR one sentence
+
+- **Blocking duplicate guard.** A shipped reel filled 26 slots from 21 images, one face
+  appearing three times. The mechanical cause was sourcing a POOL of ambience shots and
+  distributing it across beats — repetition was guaranteed before the first choice was
+  made, and a repeat is always a slot being filled rather than a sentence illustrated.
+  `export.sh` now refuses when any single-image beat reuses a picture. Grids (the hook
+  teaser, an enumeration burst) are exempt: re-showing there is the point.
+- **Blocking asset preflight.** The renderer answered a missing folder with a React
+  stack trace naming no file, exited 0, and left the PREVIOUS reel on disk — a stale
+  file that reads as a fresh render. Every path the mapping names is now checked
+  against the staged bundle first, and the missing ones are printed by name.
+- **Check the output's mtime before claiming a render happened.** The frame count
+  matched on a file that was 90 minutes old.
+
 ## 0.7.2 — source inside the script's world
 
 - **The master rule for backgrounds, learned over three rejected passes**: show the

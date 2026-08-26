@@ -20,6 +20,29 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# BLOCKING: no image may be used twice. A reel that fills 26 slots from 21 images
+# repeats — and a repeat is always a slot being FILLED rather than a sentence being
+# illustrated. Sourcing a pool and distributing it is the failure mode; one image is
+# sourced FOR one beat. Override deliberately with PIMP_ALLOW_REPEATS=1.
+if [ -z "$PIMP_ALLOW_REPEATS" ]; then
+  DUP=$(python3 - "$PROJ/mapping.json" <<'PYEOF'
+import json,sys
+from collections import Counter
+m=json.load(open(sys.argv[1]))
+# Only SINGLE-image beats must be unique: a multi-image grid is a teaser or a burst
+# and legitimately re-shows what the reel contains (the hook collage exists for that).
+solo=[s for s in m.get('segments',[]) if len(s.get('images',[]) or ([s['image']] if s.get('image') else []))==1]
+c=Counter((s.get('images') or [s['image']])[0].split('/')[-1] for s in solo)
+print(' '.join(f'{k}x{v}' for k,v in c.items() if v>1))
+PYEOF
+)
+  if [ -n "$DUP" ]; then
+    echo "REFUSING to export — image(s) used more than once: $DUP"
+    echo "  Source a distinct image for each beat, or set PIMP_ALLOW_REPEATS=1."
+    exit 1
+  fi
+fi
+
 # BLOCKING: no watermarked image ships. An image tiled with "ultimateapparels.com"
 # reached a user's reel twice because it was only ever seen at thumbnail size. The
 # check reads the text in each image; it is fast and it refuses, it does not warn.
@@ -39,6 +62,27 @@ cp "$PROJ/mapping.json" "$TPL/mapping.json"
 cp "$PROJ"/rush.* "$TPL/public/project/" 2>/dev/null || true
 [ -d "$PROJ/img" ] && cp -R "$PROJ/img" "$TPL/public/project/img"
 mkdir -p "$PROJ/out"
+
+# Every asset the mapping names must exist in the staged bundle. Without this the
+# renderer fails with a React stack trace naming no file, and — worse — the previous
+# out/reel.mp4 stays on disk, so a stale reel looks like a fresh one. A missing folder
+# (images kept in img2/ while staging copies only img/) cost exactly that.
+python3 - "$PROJ/mapping.json" "$TPL/public" <<'PYEOF' || exit 1
+import json, os, sys
+m = json.load(open(sys.argv[1])); pub = sys.argv[2]
+refs = {m['rush']}
+for seg in m.get('segments', []):
+    if seg.get('image'):
+        refs.add(seg['image'])
+    refs.update(seg.get('images', []))
+missing = [r for r in sorted(refs) if not os.path.exists(os.path.join(pub, r))]
+if missing:
+    print('REFUSING to export — %d asset(s) missing from the bundle:' % len(missing))
+    for r in missing[:10]:
+        print('   ', r)
+    print('    (images must live in <project>/img/ — that is the only folder staged)')
+    sys.exit(1)
+PYEOF
 
 FPS=$(python3 -c "import json;print(json.load(open('$PROJ/mapping.json'))['fps'])")
 LAST=$(python3 -c "import json;print(json.load(open('$PROJ/mapping.json'))['durationInFrames']-1)")
