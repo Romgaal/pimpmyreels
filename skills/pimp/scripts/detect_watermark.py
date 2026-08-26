@@ -27,7 +27,7 @@ from PIL import Image, ImageFilter, ImageOps
 # classic m->n misread), and known stock brands.
 MARKS = re.compile(
     r'(\.co[mn]\b|\.ne[tf]\b|www\.|shutterstock|alamy|getty|istock|dreamstime'
-    r'|depositphotos|123rf|adobestock|stablediffusion|rarefilm|apparel)',
+    r'|depositphotos|123rf|adobestock|stablediffusion|rarefilm|apparel|fineart|pixels\.com)',
     re.I)
 
 

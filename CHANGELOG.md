@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.1 — Unsplash as the ambiance engine
+
+- **`--engine unsplash`** in `source_images.py`: design-grade original photography for
+  ambiance and metaphor queries — the exact queries where the Bing/DDG scrape returns
+  AI slop and stamped stock. Watermark-free by construction, 1600px, portrait-aware.
+  Needs `UNSPLASH_ACCESS_KEY` (env or `~/.config/pimpmyreels/env`); without it the
+  engine is skipped and the scrape chain applies. Useless for film stills — opt-in on
+  purpose, per query.
+- Watermark gate learns `fineart`/`pixels.com` — a Fine Art America corner stamp
+  slipped past the domain list on a real image.
+- Mode-2 art direction refined on a real reel: metaphor over decoration (crystal dice
+  for "dare", sprinter in the blocks for "bolder than you", a handed rose for "you
+  offer", an ace fan for "she plays"), one image never used twice, no CGI-look picks.
+
 ## 0.6.0 — mode 2: the images become the stage
 
 - **`"mode": "background"`** — for a rush delivered as a CUTOUT (speaker on

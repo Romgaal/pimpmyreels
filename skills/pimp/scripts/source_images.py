@@ -51,6 +51,32 @@ def fetch(url, timeout=20):
     return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout).read()
 
 
+def unsplash_key():
+    k = os.environ.get('UNSPLASH_ACCESS_KEY', '')
+    if not k:
+        cfg = os.path.expanduser('~/.config/pimpmyreels/env')
+        if os.path.exists(cfg):
+            for line in open(cfg):
+                if 'UNSPLASH_ACCESS_KEY=' in line:
+                    k = line.split('=', 1)[1].strip()
+    return k
+
+
+def engine_unsplash(q, gif=False, fmt='square'):
+    """Unsplash search API. The right source for AMBIANCE and metaphor images:
+    original photography, design-grade, and no watermarks by construction — the
+    Bing/DDG scrape returns AI slop and stamped stock for exactly those queries.
+    Useless for film stills (Unsplash has none), so it is opt-in via --engine."""
+    key = unsplash_key()
+    if not key or gif:
+        return []
+    orient = {'portrait': 'portrait', 'landscape': 'landscape'}.get(fmt, 'squarish')
+    url = ('https://api.unsplash.com/search/photos?query=' + urllib.parse.quote(q)
+           + f'&per_page=12&orientation={orient}&client_id=' + key)
+    js = json.loads(fetch(url, 20))
+    return [r['urls']['full'] + '&w=1600' for r in js.get('results', [])]
+
+
 def engine_bing(q, gif=False, fmt='square'):
     if gif:
         f = '+filterui:photo-animatedgif'
@@ -154,10 +180,10 @@ def fits(im, fmt):
     return 0.8 <= r <= 2.0
 
 
-def scrape(q, out, n, gif, fmt='square'):
+def scrape(q, out, n, gif, fmt='square', engine='auto'):
     block = blocklist()
     got = []
-    cache = os.path.join(HOME, 'cache', hashlib.sha1((q + str(gif) + fmt).encode()).hexdigest()[:12])
+    cache = os.path.join(HOME, 'cache', hashlib.sha1((q + str(gif) + fmt + engine).encode()).hexdigest()[:12])
     if os.path.isdir(cache) and os.listdir(cache):
         for i, f in enumerate(sorted(os.listdir(cache))[:n]):
             dst = os.path.join(out, f'web-{i+1}{os.path.splitext(f)[1]}')
@@ -165,7 +191,9 @@ def scrape(q, out, n, gif, fmt='square'):
             got.append({'path': dst, 'source': 'cache'})
         return got
     os.makedirs(cache, exist_ok=True)
-    for eng in (engine_bing, engine_ddg):
+    engines = ((engine_unsplash, engine_bing, engine_ddg) if engine == 'unsplash'
+               else (engine_bing, engine_ddg))
+    for eng in engines:
         if len(got) >= n:
             break
         try:
@@ -210,9 +238,12 @@ if __name__ == '__main__':
                     help='max candidates taken from the banks (default 1). The rest come '
                          'from the web, so every board offers fresh options. Use '
                          '--bank-max 3 to work offline from the bank only.')
-    ap.add_argument('--format', dest='fmt', choices=['square', 'landscape'], default='square',
+    ap.add_argument('--format', dest='fmt', choices=['square', 'landscape', 'portrait'], default='square',
                     help='intended display format: square, landscape or portrait '
                          '(mode-2 backgrounds) — drives the aspect filter (default square)')
+    ap.add_argument('--engine', choices=['auto', 'unsplash'], default='auto',
+                    help='unsplash: design/ambiance photography first (needs UNSPLASH_ACCESS_KEY); '
+                         'auto: bing+ddg (film stills, memes)')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
     a = ap.parse_args()
@@ -228,7 +259,7 @@ if __name__ == '__main__':
 
     res = from_bank(a.concept, a.out, bank_budget, used)
     if len(res) < a.candidates:
-        res += scrape(a.query, a.out, a.candidates - len(res), a.gif, a.fmt)
+        res += scrape(a.query, a.out, a.candidates - len(res), a.gif, a.fmt, a.engine)
     # Last resort: web gave nothing (offline, blocked) — fill up from the bank.
     if len(res) < a.candidates:
         have = {r.get('hash') for r in res}

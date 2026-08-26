@@ -341,8 +341,12 @@ own — you never ask.
   grid. Edge to edge, no gap, hard cuts — same rules as ever.
 - **The hook is a 4-grid.** After it, no rule: 1, 2 or 4 per beat as the words demand.
   A single strong image fullscreen breathes; a 4-grid punches.
-- **Source with `--format portrait`** — cells are 9:16 or 9:8, and a wide still
-  cover-cropped to portrait loses most of itself. Ambiance-first reads best at full
+- **Source with `--format portrait --engine unsplash`** — cells are 9:16 or 9:8, and a
+  wide still cover-cropped to portrait loses most of itself. Unsplash is the right
+  engine for ambiance and metaphor (design photography, no watermarks, no AI slop);
+  the scrape chain stays for film stills and memes. Favour METAPHOR over decoration:
+  crystal dice for "dare", a sprinter in the blocks for "bolder than you", a handed
+  rose for "you offer" — comprehensible in half a second, beautiful, modern. Ambiance-first reads best at full
   bleed (offices, skies, streets, close objects); precise film stills still work when
   their subject is central.
 - **Speaker placement**: `speakerScale` (default 0.45), `speakerX`/`speakerY`
