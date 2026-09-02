@@ -20,6 +20,28 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+# BLOCKING: the brief. Every mechanical guard below passed on a reel whose images were
+# a pink gradient for "spiritual", a cardboard box for "putting yourself in a box" and
+# restaurant menus for "name badges" — technically clean, editorially garbage. The
+# brief (brief.json) ties each sentence to an idea, a concrete scene and what the chosen
+# image LITERALLY shows; validate_picks.py refuses abstract or generic picks and a
+# culture share outside 30-70%, then stamps the exact brief+mapping it approved. Touch
+# either file and the stamp is void. Override deliberately with PIMP_SKIP_BRIEF=1.
+if [ -z "$PIMP_SKIP_BRIEF" ]; then
+  if [ ! -f "$PROJ/brief.json" ]; then
+    echo "REFUSING to export — no brief.json in $PROJ"
+    echo "  python3 $(dirname "$0")/brief.py init \"$PROJ\"   (then fill it, check, source, pick, validate)"
+    exit 1
+  fi
+  WANT=$(cat "$PROJ/mapping.json" "$PROJ/brief.json" | shasum -a 256 | cut -d' ' -f1)
+  HAVE=$(cat "$PROJ/.picks-ok" 2>/dev/null || true)
+  if [ "$WANT" != "$HAVE" ]; then
+    echo "REFUSING to export — picks not validated against the CURRENT brief + mapping."
+    echo "  python3 $(dirname "$0")/validate_picks.py \"$PROJ\"   (writes the stamp when every pick passes)"
+    exit 1
+  fi
+fi
+
 # BLOCKING: no image may be used twice. A reel that fills 26 slots from 21 images
 # repeats — and a repeat is always a slot being FILLED rather than a sentence being
 # illustrated. Sourcing a pool and distributing it is the failure mode; one image is

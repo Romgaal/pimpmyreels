@@ -24,6 +24,11 @@ see step 5.
 
 ## 2. Mapping thought out before sourcing
 
+> Since 0.10.0 this table lives in `brief.json` (`brief.py init`), with an `idea` and a
+> concrete `scene` per beat, and `validate_picks.py` refuses the export until every
+> chosen image carries `shows` — what is literally in the frame. Same thinking, now
+> enforced.
+
 | Time | Word | Image | Why |
 |---|---|---|---|
 | 2.0s | perdu / à bout de souffle | Cast Away | universal image of being lost |

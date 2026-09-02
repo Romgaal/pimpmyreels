@@ -71,165 +71,116 @@ if already done.
   real value (and warns on variable frame rate, which breaks the formula entirely).
 - To find a specific word's timecode, grep `words.json` for it.
 
-## 3. Think the mapping BEFORE sourcing anything
-
-Read `references/mapping-guide.md` (concept → validated iconic scenes) and
-`references/style-rules.md` (the hard rules and the anti-examples).
-
-- **Show every word that can be shown.** One image per *idea*, and an enumeration is
-  as many ideas as it has items: "posture, diction, vocabulary, hygiene, intelligence,
-  general knowledge" is six images, not one. Two images across nine seconds of dense
-  speech is padding, and it reads as padding.
-- **Aim for one image every 2–3s** on a dense script. The old guidance here said one per
-  4–6s and produced exactly the sparse result users reject. Slow down only where the
-  speaker's face genuinely carries the line — a direct address, a pause, the CTA.
-- **CLOSE-UPS AND MEDIUM SHOTS ONLY.** A cutaway is 41% of the frame width; on a phone
-  that is about the size of a matchbox. A wide shot — a figure in a room, a crowd, a
-  full-body walk — turns into an unreadable smudge, and no crop can save it, because the
-  subject is small in the source. Judge every candidate at its final size on the board,
-  not full-screen. This is the single most common reason a technically-fine image fails.
-- Only **instantly recognizable** subjects: if it takes more than half a second to read,
-  it's the wrong image.
-- **And ask what the reference NARRATES.** Recognisable is not enough: a famous meme
-  carries its own story, and that story must agree with the sentence. Real miss —
-  distracted-boyfriend (a man cheating) placed in a reel about respect.
-- **It does not have to be a film.** A meme, a gif, a plain photograph of the object or
-  gesture being named — anything that makes the word visible. Films are a reliable source
-  of iconic, recognisable frames, not a requirement.
-- 1.5–8s per image. A great image can hold 6s; a weak one is wrong at any length.
-- **Make this reel unique.** The bank is a quality standard, not a shopping list. If
-  the user already has reels, do not reuse the same still for the same idea — the
-  alternates table in `mapping-guide.md` exists for that, and the engine surfaces
-  fresh candidates first. Two reels that look alike is a failure, even if each one is
-  individually fine.
-- **Stay current.** Include **1–2 references from the last 2–3 years** when the topic
-  allows (recent series, films, memes actually circulating), on top of the timeless
-  classics. Ask the user what they're watching if you're unsure.
-- **Use 1–2 gifs per reel, not zero.** The pipeline is fully wired for them
-  (`--gif` sourcing with header+PIL validation, `<Gif>` rendering) and they have been
-  used exactly once across six real reels — a wired feature nobody uses is a missing
-  feature. Reaction beats are the spot: panic, "no no no", "just do it", an eye-roll.
-  Never more than two: motion is salt, not the dish.
-- **Mix punch and breath, roughly 50/50.** A wall of movie stills reads as noisy
-  meme-spam. The reels that look premium alternate a *punch* (meme / iconic scene)
-  with a *breath* (an atmospheric, cinematic, slightly surreal image). Plan both when
-  you write the mapping — see the "Punch and breath" section of `mapping-guide.md`.
-
-**Read `~/.pimpmyreels/taste.md` first if it exists** — it is the record of every
-swap and rejection this user has made on past boards. A mapping that repeats a logged
-rejection is a wasted round-trip you chose to have.
-
-Write the plan as a table (timecode · word · film · why) before touching the network.
-
-## 4. Source 3 candidates per beat
+## 3. Write the brief — MANDATORY (export.sh refuses without it)
 
 ```bash
-python3 scripts/source_images.py --query "<film actor precise scene> scene" \
-  --concept <tag> --out ~/pimpmyreels/<name>/candidates/01-<beat>/ --candidates 3
+python3 scripts/brief.py init ~/pimpmyreels/<name>     # one beat per sentence, fields empty
 ```
 
-By default **only 1 of the 3 candidates comes from the banks** (freshest first, across
-all tiers — an unused community still outranks a core one you already used); the other
-2 are sourced fresh from the web. That is deliberate: it keeps every reel visually
-different while the bank keeps the quality bar. `--bank-max 3` forces bank-only
-(useful offline), `--bank-max 0` forces all-fresh.
+**Read `references/idea-bank.md` FIRST**, then `~/.pimpmyreels/taste.md` if it exists
+(every swap and rejection this user ever made). Then fill, for every beat:
 
-Images are **square by default** (`--format square`), which is also what the aspect
-filter enforces — atmospheric images are often 1:1 and would be rejected by the
-landscape filter. Pass `--format landscape` only for wide compositions you intend to
-display as landscape.
+| field | what goes in it | what gets refused |
+|---|---|---|
+| `idea` | what the sentence **means** | empty |
+| `scene` | **one concrete picture** a viewer recognises as that idea *without the words*: a human moment, a cultural reference, a graphic object with an obvious reading | a keyword; anything abstract (gradient, texture, pattern, shape, silhouette) |
+| `register` | `film` `meme` `gif` `icon` `photo` `graphic` | culture (`film`+`meme`+`gif`+`icon`) outside **30–70 %**; `graphic` over 20 % |
+| `refs` | the film / series / meme / artwork you **considered**, even when a photo wins | empty — an editor with no reference in mind ships stock |
+| `query` | what the **engine** needs: title + actor + moment, or subject + action + framing | a copy of `scene` |
+| `engine` | `ddg` for films/memes/gifs, `unsplash` for photos, `wikimedia` for icons | — |
 
-Wide meme gifs (the classic 498x280 format) get `"format": "landscape"` in their
-segment — a square cover-crop amputates the meme's own text.
+**The one rule under all of it: illustrate the IDEA, never the WORD.** "Spiritual" is a
+monk, not a pink rectangle. "Degree" is an amp that goes to eleven, not a thermometer.
+"Yes or no, black or white" is Morpheus holding out two pills, not two squares.
+"Putting yourself in a box" is a *Hello my name is* sticker, not a cardboard box. When
+the idea is abstract, the picture must be MORE concrete, not less — that is exactly
+where the reference reels use a cultural scene.
 
-Craft web queries per `references/query-guide.md` (it has a dedicated section for
-atmospheric images — they are searched by mood, not by film). Add `--gif` for
-animated memes.
+Still true, still enforced by the brief:
 
-## 5. QA + validation — ONE board, two uses (BLOCKING GATE)
+- **One image per idea, one every 2–3 s** on a dense script; an enumeration is as many
+  images as it has items. `brief.py check` warns on any hole longer than 5 s.
+- **Close-ups and medium shots only** — at 41 % of the frame a wide shot is a smudge.
+- **Ask what the reference NARRATES.** Distracted-boyfriend is a man cheating; it does
+  not illustrate "respect".
+- **Make this reel unique** (no still reused across the user's reels), **stay current**
+  (1–2 references from the last 2–3 years), **1–2 gifs** on reaction beats, **alternate
+  punch and breath** — a wall of stills is meme spam, a wall of stock is "assembled".
 
 ```bash
-python3 scripts/build_board.py ~/pimpmyreels/<name>
+python3 scripts/brief.py check ~/pimpmyreels/<name>    # refuses a lazy brief, exit 1
 ```
 
-This builds a single numbered sheet: row = beat, columns = candidates, labelled
-`beat.candidate` (`2.3` = beat 2, candidate 3).
-
-**LOOK AT EVERY FINALIST AT 380px+ AND SAY WHAT IT SHOWS.** Not the concept you
-searched — what is literally in the frame. This is the single most expensive mistake in
-this pipeline: a reel shipped where "name badges" were restaurant menu clipboards, "a
-dismissal" was two old men playing chess, and "scrolling at night" was a woman lounging
-in bed. Every one was chosen off a 200px thumbnail and assumed correct BECAUSE IT SAT IN
-THE FOLDER NAMED AFTER THE CONCEPT. If you cannot write "this image shows X" and have X
-match the sentence, reject it. One command builds the sheet; it costs seconds and it is
-not optional.
-
-**Read that one sheet.** Never open candidate files one by one — it costs ~20× more
-for the same information.
-
-**Use `build_board.py` — do not hand-roll a contact sheet that centre-crops.** The board
-shows each candidate WHOLE with the displayed square outlined, on purpose: a cropped
-thumbnail hides what the file is. A stacked three-panel montage shipped to a user
-because an ad-hoc square-cropped sheet showed only its middle panel, which looked fine.
-Structure and framing must be judged in the same glance.
-
-Run `python3 scripts/detect_watermark.py <project>/candidates/<beat>` on anything you
-are about to keep — a tiled stamp is invisible at board size and `export.sh` will
-refuse the render anyway. Reject, by number: watermarks and source logos, black bars, posters instead of scene
-stills, AI-looking renders, and anything that isn't the scene you asked for. Re-source
-the rejected beats with a better query; if a domain keeps polluting results,
-`python3 scripts/source_images.py --reject <domain>` teaches the blocklist. Rebuild
-the sheet, then re-read it.
-
-**Then show the sheet to the human**, state your picks (`1.2, 2.1, 3.3`) and the film
-behind each, and **wait**. They swap what they want. Their taste beats yours — this
-gate exists because it repeatedly caught choices that were technically fine and
-editorially wrong.
-
-**Never render before explicit human validation.**
-
-**Source one image FOR one sentence — never a pool you then distribute.** Filling slots
-from a shared pool is what produces the same face three times and generic wallpaper on
-half the beats; `export.sh` refuses the export outright if a single-image beat repeats.
-
-**Then write down what they swapped.** Append one line per decision to
-`~/.pimpmyreels/taste.md` — `rejected Indiana Jones for "courage": too old, wants
-modern` / `swapped in Vikings: watches it`. That file is the user's taste, learned
-the only way taste can be learned. It is not optional bookkeeping: the board gate
-exists because their choices beat yours, and the log is how their choices reach the
-NEXT reel's mapping instead of being re-litigated every time.
-
-## 6. Write mapping.json
-
-**Generate the skeleton first — never hand-write fps or durationInFrames:**
+## 4. Source — from the brief, 3 candidates per beat
 
 ```bash
-bash scripts/init_mapping.sh ~/pimpmyreels/<name>
+python3 scripts/brief.py source ~/pimpmyreels/<name>   # candidates/<NN-slug>/ per beat, idempotent
 ```
 
-It probes the rush with ffprobe and writes the correct `fps`, `width`, `height` and
-`durationInFrames` (a wrong fps desyncs every image; a wrong duration cuts the reel
-short). You only fill in `segments`. Do **not** copy `mapping.example.json` — it
-points at the doctor's test fixture, not at your project.
+To re-source one beat with a better query, call `source_images.py` directly:
 
-Schema reference: `../../template/mapping.example.json`.
+```bash
+python3 scripts/source_images.py --query "<title actor moment>" --concept <tag> \
+  --out ~/pimpmyreels/<name>/candidates/07-<slug>/ --candidates 3 --engine ddg
+```
 
-- `start` comes from the word timecodes. This is the whole point.
-- Copy the chosen images into `~/pimpmyreels/<name>/img/` and reference them as
-  `project/img/<file>.jpg`.
-- **No gaps**: omit `end` and each image holds until the next one starts.
-- Open with a **collage** of 6 validated images — **no text on it**. The user adds
-  titles and subtitles themselves (Captions app). Place it high enough to clear the
-  speaker's face.
-- **The collage holds through the ENTIRE hook line — 3s is the floor, not the target.**
-  Find where the hook sentence ends in `words.json` and start the first cutaway there;
-  an image that fires mid-hook burns itself on words that belong to the collage. The template enforces this
-  (`collageMinSeconds`), drops any cutaway swallowed underneath, and starts the next
-  one exactly when the collage ends. So write your first cutaway's timecode from the
-  words as usual and let the template resolve the opening; do not hand-shift it.
-- **`format` defaults to square** — leave it out. Only set `"format": "landscape"`
-  for a wide composition that a 1:1 crop would destroy; that is the exception.
-- `align: "left"/"right"` occasionally, to vary the eye. Not every image.
+Engines, measured: **DuckDuckGo** returns real stills for films Bing gets wrong (Rain
+Man, A Beautiful Mind, Inside Out) and indexes Tenor — first choice for films, memes and
+gifs. **Unsplash** for design photography (50 req/h). **Wikimedia** for historical
+figures and artworks. **Bing** as fallback. `--bank-max 0` keeps every reel fresh;
+`--format landscape` only for a wide meme gif whose text a square crop would amputate.
+
+## 5. Look, name, validate — THE semantic gate (BLOCKING)
+
+```bash
+python3 scripts/build_board.py ~/pimpmyreels/<name>              # candidates, whole, outlined
+```
+
+Choose by number, copy the winners into `img/`, put each path in the beat's `image`
+(`project/img/<file>.jpg`), then:
+
+```bash
+python3 scripts/validate_picks.py ~/pimpmyreels/<name> --sheet-only   # picks_sheet.png
+```
+
+**Open `picks_sheet.png` and, for every pick, write `shows`: 2+ words naming what is
+LITERALLY in the frame** — the content, not the concept you searched. Then the sentence
+sits above the picture and `shows` below it, and the test is one glance: if the picture
+needs the folder name to make sense, it fails. A reel shipped where "name badges" were
+restaurant menu clipboards and "a dismissal" was two old men playing chess, because
+every pick was made off a 200 px thumbnail and assumed right by its folder name.
+
+```bash
+python3 scripts/validate_picks.py ~/pimpmyreels/<name>       # stamps .picks-ok, or refuses
+```
+
+It refuses: a missing `shows`, a `shows` that copies the query, a `shows` describing an
+abstract or generic image (gradient, pattern, shape, silhouette, stranger portrait,
+cardboard box, mug, fabric…), an image used twice, a short side under 700 px, and a
+culture share outside 30–70 %. Watermarks are `export.sh`'s job; run
+`detect_watermark.py` on the candidates folder early to save a round-trip.
+
+**Then show `picks_sheet.png` to the human, state the picks, and wait.** Their taste
+beats yours. **Write what they swapped** into `~/.pimpmyreels/taste.md`, one line per
+decision — that log is how their choices reach the NEXT reel instead of being
+re-litigated. Never render before explicit human validation.
+
+## 6. mapping.json — generated, never hand-written
+
+```bash
+bash scripts/init_mapping.sh ~/pimpmyreels/<name>     # fps / size / durationInFrames from ffprobe
+python3 scripts/brief.py mapping ~/pimpmyreels/<name> # segments from the brief (+ collage)
+```
+
+- `start` comes from the sentence timecodes in the brief (3-frame lead applied).
+- **Collage**: list 6 validated images in the brief's `collage` — no text on it, the user
+  adds titles in Captions. **It holds through the ENTIRE hook line** (`collageMinSeconds`,
+  3 s floor); the template drops any cutaway swallowed underneath and starts the next one
+  exactly when the collage ends.
+- `format` defaults to square; `"format": "landscape"` only for a wide composition a 1:1
+  crop would destroy. `speaker` / `images` per beat are carried through for mode 2.
+- Any hand edit to `mapping.json` or `brief.json` voids the stamp: re-run
+  `validate_picks.py` (seconds) before `export.sh`.
 
 ## 7. Render
 

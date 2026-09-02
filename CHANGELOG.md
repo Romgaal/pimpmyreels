@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.10.0 — the brief: a semantic gate that blocks the export
+
+Three reels in a row were rejected by their author with the same verdict: the images
+were technically clean and editorially garbage — a pink gradient for "spiritual", two
+squares for "yes/no, black/white", a thermometer for "30 %", a cardboard box for
+"putting yourself in a box", restaurant menus for "name badges". Every mechanical
+guard passed. The failure was upstream: a concept WORD typed into a search engine
+returns a picture of that word, and picks were made off 200 px thumbnails by folder
+name without ever looking at the image.
+
+- **`brief.py init | check | source | mapping`** — one beat per sentence with `idea`
+  (what it means), `scene` (one concrete picture: a human moment, a cultural
+  reference, a graphic object — never abstract), `register`, `refs` (the references
+  CONSIDERED, even when a photo wins), `query`, `engine`. `check` refuses a keyword
+  scene, an abstract scene, empty refs, and a culture share outside 30–70 %. `source`
+  downloads candidates per beat from the brief; `mapping` generates the segments.
+- **`validate_picks.py`** — for every pick the brief must carry `shows`: what is
+  LITERALLY in the frame, written after looking at it at 380 px. Refuses abstract or
+  generic descriptions, duplicates, undersized files and a bad mix; builds
+  `picks_sheet.png` (sentence above, `shows` below — the one-glance test); stamps the
+  exact brief + mapping it approved.
+- **`export.sh` refuses without the stamp.** Touch `brief.json` or `mapping.json` and
+  it is void. `PIMP_SKIP_BRIEF=1` overrides deliberately.
+- **`references/idea-bank.md`** — the references a culture-literate editor reaches for,
+  by recurring idea (duality → Morpheus' two pills; degree → the amp that goes to
+  eleven; self-labelling → Sheldon "my mother had me tested"…). Read before briefing.
+- SKILL.md steps 3–6 rewritten around the brief; the "illustrate the IDEA, never the
+  WORD" rule is now the first rule of the mapping step.
+
 ## 0.9.0 — DuckDuckGo fixed, two free sources added
 
 - **`engine_ddg` returned zero results on every query and had for a long time.** It
