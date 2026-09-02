@@ -17,7 +17,7 @@ What it enforces — each rule is a shipped failure:
              gradient for "spiritual" and a cardboard box for "putting yourself in a
              box" both passed every mechanical check and were both rightly called
              garbage by the person who has to publish them.
-  mix        culture (film/meme/gif) must be 30-70% of picked beats.
+  mix        culture (film/meme/gif/icon) must be 50-85% of picked beats.
   unique     no image on two beats.
   size       short side >= 400px in mode 1 (a 443px cell), >= 1000px in mode 2 (full frame).
 
@@ -106,8 +106,9 @@ def main():
     if beats and not sheet_only:
         cult = sum(1 for b in beats if b.get('register') in CULTURE)
         share = cult / len(beats)
-        if not 0.30 <= share <= 0.70:
-            errs.append(f'mix: {cult}/{len(beats)} culture beats ({share:.0%}) — must be 30-70%')
+        if not 0.50 <= share <= 0.85:
+            errs.append(f'mix: {cult}/{len(beats)} culture beats ({share:.0%}) — must be 50-85%. '
+                        f'Cinema is the base material, photography is the breathing space.')
 
     # The sheet: sentence ABOVE, shows BELOW. Reading the two lines against the picture
     # is the whole test — if the picture needs the folder name to make sense, it fails.

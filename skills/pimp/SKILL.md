@@ -84,7 +84,7 @@ python3 scripts/brief.py init ~/pimpmyreels/<name>     # one beat per sentence, 
 |---|---|---|
 | `idea` | what the sentence **means** | empty |
 | `scene` | **one concrete picture** a viewer recognises as that idea *without the words*: a human moment, a cultural reference, a graphic object with an obvious reading | a keyword; anything abstract (gradient, texture, pattern, shape, silhouette) |
-| `register` | `film` `meme` `gif` `icon` `photo` `graphic` | culture (`film`+`meme`+`gif`+`icon`) outside **30–70 %**; `graphic` over 20 % |
+| `register` | `film` `meme` `gif` `icon` `photo` `graphic` | culture (`film`+`meme`+`gif`+`icon`) outside **50–85 %**; `graphic` over 20 % |
 | `refs` | the film / series / meme / artwork you **considered**, even when a photo wins | empty — an editor with no reference in mind ships stock |
 | `query` | what the **engine** needs: title + actor + moment, or subject + action + framing | a copy of `scene` |
 | `engine` | `ddg` for films/memes/gifs, `unsplash` for photos, `wikimedia` for icons | — |
@@ -105,7 +105,8 @@ Still true, still enforced by the brief:
   not illustrate "respect".
 - **Make this reel unique** (no still reused across the user's reels), **stay current**
   (1–2 references from the last 2–3 years), **1–2 gifs** on reaction beats, **alternate
-  punch and breath** — a wall of stills is meme spam, a wall of stock is "assembled".
+  punch and breath**. **Cinema is the base material, photography is the breathing space
+  between punches** — the author asked for more film scenes, not fewer.
 
 ```bash
 python3 scripts/brief.py check ~/pimpmyreels/<name>    # refuses a lazy brief, exit 1
@@ -156,8 +157,8 @@ python3 scripts/validate_picks.py ~/pimpmyreels/<name>       # stamps .picks-ok,
 
 It refuses: a missing `shows`, a `shows` that copies the query, a `shows` describing an
 abstract or generic image (gradient, pattern, shape, silhouette, stranger portrait,
-cardboard box, mug, fabric…), an image used twice, a short side under 700 px, and a
-culture share outside 30–70 %. Watermarks are `export.sh`'s job; run
+cardboard box, mug, fabric…), an image used twice, an undersized file, and a culture
+share outside 50–85 %. Watermarks are `export.sh`'s job; run
 `detect_watermark.py` on the candidates folder early to save a round-trip.
 
 **Then show `picks_sheet.png` to the human, state the picks, and wait.** Their taste

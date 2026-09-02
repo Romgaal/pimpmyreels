@@ -9,6 +9,12 @@ Rule of thumb: **the more abstract the sentence, the more concrete the picture.*
 
 | Idea in the sentence | Films / series (query = title + actor + moment) | Memes / icons | Concrete photo scene |
 |---|---|---|---|
+| Questioning yourself, "am I…?" | **The Truman Show** — Truman talking to himself at the bathroom mirror · **Fight Club** — the mirror · **Black Swan** | — | A face close to a mirror |
+| Being all versions of yourself at once | **Everything Everywhere All At Once** — Evelyn in the verse-jumping tunnel · **Cloud Atlas** · **Being John Malkovich** | — | A long exposure of one person multiplied |
+| Two opposite temperaments in one person | **The Mask** — Carrey mid-transformation · **Split** · **Dr Jekyll and Mr Hyde** | — | A face lit half warm, half cold |
+| The brilliant atypical mind | **The Imitation Game** — Turing at Enigma · **Rain Man** — the casino · **The Good Doctor** · **Temple Grandin** | — | — |
+| Spiritual oneness, ancient wisdom | **Kung Fu Panda** — Oogway under the peach tree · **Doctor Strange** — the Ancient One · **Star Wars** — Yoda | — | Balanced stacked stones |
+| Being sorted, categorised, boxed | **Harry Potter** — the Sorting Hat · **Divergent** — the factions · **The Hunger Games** — the reaping | — | A label maker |
 | Binary choice, yes/no, black/white, duality | **Matrix** — Morpheus red pill / blue pill · **Dark Knight** — Two-Face's coin · **Sliding Doors** | Drake yes/no · yin-yang | Two doors side by side · a light switch, hand on it |
 | Degree, spectrum, intensity, "it's not on/off" | **This Is Spinal Tap** — the amp that goes to eleven · **Inception** — the totem still spinning | Volume bar 🔊 · loading bar | Dimmer knob with a hand · mixing-desk faders at different heights · a fuel gauge · a thermostat |
 | Percentages, levels, "30 %, 60 %" | **Mad Max** fuel · **Speed** speedometer | iPhone at 1 % battery · Tamagotchi | Phone low-battery screen · car gauge · elevator floor buttons |
@@ -51,4 +57,7 @@ Rule of thumb: **the more abstract the sentence, the more concrete the picture.*
 4. Write the **query for the engine**: film = title + actor + moment (`Morpheus red pill
    blue pill hands`), photo = subject + action + framing (`monk orange robe meditating
    close up`). Never the idea word alone.
-5. When a reel teaches you a better reference, add it here.
+5. **A poster is not a still.** Querying a film's title alone returns the poster with
+   its title card burned in — measured on Lucy, three posters out of three. Always
+   query the SCENE: characters + place + action.
+6. When a reel teaches you a better reference, add it here.

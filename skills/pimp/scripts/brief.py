@@ -25,9 +25,11 @@ Commands
   source   downloads 3 candidates per beat into candidates/<NN-slug>/ (idempotent)
   mapping  writes mapping.json segments from the brief's chosen images (+ collage)
 
-Registers: film | meme | gif | photo | graphic.  Culture (film+meme+gif) must be
-30-70% of the beats — the reference reels mix modern illustration with recognisable
-scenes; a wall of stock is "assembled", a wall of stills is "meme spam".
+Registers: film | meme | gif | icon | photo | graphic.  Culture (film+meme+gif+icon)
+must be 50-85% of the beats. The author asked for MORE film scenes after a 59% reel:
+recognisable cinema is what gives a reel its "esprit de reference", and modern
+illustration photography is the breathing space between the punches — not the base
+material. Below 50% it reads as stock; above 85% it is meme spam.
 """
 import json
 import os
@@ -121,12 +123,13 @@ def cmd_check(proj):
     n, cult, graph = mix_report(beats)
     if n:
         share = cult / n
-        if share < 0.30:
-            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — below 30%. No '
-                        f'"esprit de référence". Replace photo beats with film/meme scenes.')
-        if share > 0.70:
-            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — above 70%: meme spam. '
-                        f'Alternate with modern illustration photos.')
+        if share < 0.50:
+            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — below 50%. No '
+                        f'"esprit de référence": the author asked for MORE film scenes. '
+                        f'Replace photo beats with recognisable cinema — read idea-bank.md.')
+        if share > 0.85:
+            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — above 85%: meme spam. '
+                        f'Keep a few modern illustration photos as breathing space.')
         if graph / n > 0.20:
             errs.append(f'mix: {graph}/{n} graphic beats — above 20%.')
     # Density: a hole longer than 5 s reads as "the editor gave up".

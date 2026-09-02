@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.11.0 — cinema is the base material
+
+The author's verdict on the first briefed reel: "un peu mieux, garde cette logique.
+Utilise un peu plus les scènes et refs de films." The brief works; the mix was too
+timid at 59%.
+
+- **Culture share raised from 30–70% to 50–85%** in `brief.py check` and
+  `validate_picks.py`. Recognisable cinema is what gives a reel its "esprit de
+  référence"; modern illustration photography is the breathing space between punches,
+  not the base material. Below 50% it reads as stock, above 85% it is meme spam.
+- `idea-bank.md` grown with the references proven on real reels: Truman at the
+  bathroom mirror (self-questioning), the verse-jumping tunnel from Everything
+  Everywhere (being all versions at once), The Mask (two temperaments in one person),
+  Turing at Enigma (the brilliant atypical brain), Oogway under the peach tree
+  (spiritual oneness), the Sorting Hat (being put in a box).
+- Recorded: film **posters are not stills** — a poster query returns the title card
+  every time (Lucy). Query the scene, not the film.
+
 ## 0.10.0 — the brief: a semantic gate that blocks the export
 
 Three reels in a row were rejected by their author with the same verdict: the images
