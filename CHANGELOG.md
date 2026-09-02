@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.9.0 — DuckDuckGo fixed, two free sources added
+
+- **`engine_ddg` returned zero results on every query and had for a long time.** It
+  scraped DuckDuckGo's WEB results page for `imgurl=`, which that page no longer
+  contains, so the pipeline had silently been running on Bing alone. The real flow
+  fetches a `vqd` token then calls the JSON image endpoint: 47 results where the old
+  code returned 0. It also recovers the films Bing gets wrong — Rain Man, A Beautiful
+  Mind and Inside Out all return real stills through DDG and junk through Bing — and it
+  indexes Tenor and GifDB, making it the best engine for gifs.
+- **`--engine openverse`**: Creative Commons aggregator (Flickr, Wikimedia, museums),
+  no key. Documentary and archive register the stock engines do not cover.
+- **`--engine wikimedia`**: Commons search, no key. Historical, scientific and notable
+  subjects.
+- `auto` is now bing + ddg + openverse in sequence.
+
 ## 0.8.0 — one image is sourced FOR one sentence
 
 - **Blocking duplicate guard.** A shipped reel filled 26 slots from 21 images, one face

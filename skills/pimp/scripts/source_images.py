@@ -88,9 +88,59 @@ def engine_bing(q, gif=False, fmt='square'):
 
 
 def engine_ddg(q, gif=False, fmt='square'):
+    """DuckDuckGo IMAGE search — two steps, because one does not work.
+
+    The previous implementation scraped the /html/ WEB results page for `imgurl=`,
+    which that page has not contained for a long time: it returned zero results on
+    every query, silently, so the pipeline had been running on Bing alone without
+    anyone noticing. The real flow asks the search page for a `vqd` token, then calls
+    the JSON endpoint with it. Verified: 47 results where the old code returned 0 —
+    and DDG indexes Tenor and GifDB, which makes it the best of the engines for gifs.
+    """
     try:
-        html = fetch('https://duckduckgo.com/html/?q=' + urllib.parse.quote(q + (' gif' if gif else ' movie scene still')))
-        return [urllib.parse.unquote(u) for u in re.findall(r'imgurl=([^&"]+)', html.decode('utf-8', 'ignore'))][:30]
+        page = fetch('https://duckduckgo.com/?q=' + urllib.parse.quote(q) + '&iax=images&ia=images', 20)
+        m = re.search(r'vqd=["\']?([\d-]+)["\']?', page.decode('utf-8', 'ignore'))
+        if not m:
+            return []
+        js = json.loads(fetch('https://duckduckgo.com/i.js?l=us-en&o=json&q='
+                              + urllib.parse.quote(q) + '&vqd=' + m.group(1) + '&f=,,,&p=1', 20))
+        urls = [r['image'] for r in js.get('results', []) if r.get('image')]
+        if gif:
+            urls = [u for u in urls if u.lower().split('?')[0].endswith('.gif')] or urls
+        return urls[:40]
+    except Exception:
+        return []
+
+
+def engine_openverse(q, gif=False, fmt='square'):
+    """Openverse — the Creative Commons aggregator (Flickr, Wikimedia, museums...).
+    No key, generous quota, and a register the stock engines do not cover:
+    documentary photography, archives, museum pieces."""
+    try:
+        orient = {'portrait': 'tall', 'landscape': 'wide'}.get(fmt, 'square')
+        js = json.loads(fetch('https://api.openverse.org/v1/images/?q=' + urllib.parse.quote(q)
+                              + f'&page_size=20&aspect_ratio={orient}&license_type=all', 25))
+        return [r['url'] for r in js.get('results', []) if r.get('url')]
+    except Exception:
+        return []
+
+
+def engine_wikimedia(q, gif=False, fmt='square'):
+    """Wikimedia Commons — free, no key. The right source for anything historical,
+    scientific or notable: archive photographs, diagrams, public figures."""
+    try:
+        api = ('https://commons.wikimedia.org/w/api.php?action=query&generator=search'
+               '&gsrnamespace=6&gsrsearch=' + urllib.parse.quote(q) +
+               '&gsrlimit=20&prop=imageinfo&iiprop=url&iiurlwidth=1600&format=json')
+        js = json.loads(fetch(api, 25))
+        pages = (js.get('query') or {}).get('pages', {})
+        out = []
+        for pg in pages.values():
+            for ii in pg.get('imageinfo', []):
+                u = ii.get('thumburl') or ii.get('url')
+                if u and u.lower().split('?')[0].endswith(('.jpg', '.jpeg', '.png')):
+                    out.append(u)
+        return out
     except Exception:
         return []
 
@@ -195,8 +245,12 @@ def scrape(q, out, n, gif, fmt='square', engine='auto'):
     # backgrounds on a real reel came from the open web — watermarked AI stock the
     # user rejected on sight. A clean source silently topped up from a dirty one is
     # a dirty source. Empty result > slop.
-    engines = ((engine_unsplash,) if engine == 'unsplash'
-               else (engine_bing, engine_ddg))
+    engines = {
+        'unsplash': (engine_unsplash,),
+        'ddg': (engine_ddg,),
+        'openverse': (engine_openverse,),
+        'wikimedia': (engine_wikimedia,),
+    }.get(engine, (engine_bing, engine_ddg, engine_openverse))
     for eng in engines:
         if len(got) >= n:
             break
@@ -245,9 +299,12 @@ if __name__ == '__main__':
     ap.add_argument('--format', dest='fmt', choices=['square', 'landscape', 'portrait'], default='square',
                     help='intended display format: square, landscape or portrait '
                          '(mode-2 backgrounds) — drives the aspect filter (default square)')
-    ap.add_argument('--engine', choices=['auto', 'unsplash'], default='auto',
-                    help='unsplash: design/ambiance photography first (needs UNSPLASH_ACCESS_KEY); '
-                         'auto: bing+ddg (film stills, memes)')
+    ap.add_argument('--engine',
+                    choices=['auto', 'unsplash', 'ddg', 'openverse', 'wikimedia'], default='auto',
+                    help='auto: bing + duckduckgo + openverse (film stills, memes, documentary); '
+                         'unsplash: design photography (needs UNSPLASH_ACCESS_KEY); '
+                         'ddg: best for gifs (indexes Tenor/GifDB); '
+                         'openverse: Creative Commons archives; wikimedia: historical/notable')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
     a = ap.parse_args()
