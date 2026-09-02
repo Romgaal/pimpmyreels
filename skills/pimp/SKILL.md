@@ -155,6 +155,15 @@ python3 scripts/build_board.py ~/pimpmyreels/<name>
 This builds a single numbered sheet: row = beat, columns = candidates, labelled
 `beat.candidate` (`2.3` = beat 2, candidate 3).
 
+**LOOK AT EVERY FINALIST AT 380px+ AND SAY WHAT IT SHOWS.** Not the concept you
+searched — what is literally in the frame. This is the single most expensive mistake in
+this pipeline: a reel shipped where "name badges" were restaurant menu clipboards, "a
+dismissal" was two old men playing chess, and "scrolling at night" was a woman lounging
+in bed. Every one was chosen off a 200px thumbnail and assumed correct BECAUSE IT SAT IN
+THE FOLDER NAMED AFTER THE CONCEPT. If you cannot write "this image shows X" and have X
+match the sentence, reject it. One command builds the sheet; it costs seconds and it is
+not optional.
+
 **Read that one sheet.** Never open candidate files one by one — it costs ~20× more
 for the same information.
 
