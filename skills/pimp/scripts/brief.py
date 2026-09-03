@@ -26,10 +26,12 @@ Commands
   mapping  writes mapping.json segments from the brief's chosen images (+ collage)
 
 Registers: film | meme | gif | icon | photo | graphic.  Culture (film+meme+gif+icon)
-must be 50-85% of the beats. The author asked for MORE film scenes after a 59% reel:
+must be 50-90% of the beats. The author asked for MORE film scenes after a 59% reel:
 recognisable cinema is what gives a reel its "esprit de reference", and modern
 illustration photography is the breathing space between the punches — not the base
-material. Below 50% it reads as stock; above 85% it is meme spam.
+material. Below 50% it reads as stock; above 90% it is meme spam. The ceiling moved from
+85 to 90 rather than force a weak stock photo in just to satisfy a ratio: a filler
+photo is worse for the reel than one more good film scene.
 """
 import json
 import os
@@ -127,8 +129,8 @@ def cmd_check(proj):
             errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — below 50%. No '
                         f'"esprit de référence": the author asked for MORE film scenes. '
                         f'Replace photo beats with recognisable cinema — read idea-bank.md.')
-        if share > 0.85:
-            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — above 85%: meme spam. '
+        if share > 0.90:
+            errs.append(f'mix: {cult}/{n} culture beats ({share:.0%}) — above 90%: meme spam. '
                         f'Keep a few modern illustration photos as breathing space.')
         if graph / n > 0.20:
             errs.append(f'mix: {graph}/{n} graphic beats — above 20%.')

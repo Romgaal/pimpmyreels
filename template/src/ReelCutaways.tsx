@@ -37,8 +37,22 @@ const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, s
 	// 'landscape' is the justified exception (wide compositions that a square crop would destroy).
 	const fmt = seg.format ?? (mapping as {imageFormat?: string}).imageFormat;
 	const square = fmt !== 'landscape';
-	let w = square ? Math.round(mapping.width * 0.41) : Math.round(mapping.width * 0.519);
+	// 0.41 is the default, not a law. A tight selfie leaves no 443px band that is not
+	// the speaker's own face: on that framing the cutaway has to be smaller AND lower,
+	// and `imageScale` in mapping.json is how. Measure the frame (scripts/ruler.py)
+	// before overriding it.
+	const scale = (mapping as {imageScale?: number}).imageScale ?? 0.41;
+	let w = square ? Math.round(mapping.width * scale) : Math.round(mapping.width * scale * 1.266);
 	let h = square ? w : Math.round(w * 0.575);
+	// A cutaway placed LOW must clear the caption/username/audio block. `bioTop` says
+	// where that block starts; the image is shrunk to end above it rather than sliding
+	// under the platform's own furniture.
+	const bioTop = (mapping as {bioTop?: number}).bioTop;
+	if (bioTop && top + h > bioTop) {
+		const k = (bioTop - top) / h;
+		h = Math.round(h * k);
+		w = Math.round(w * k);
+	}
 	// Shrink (keeping the aspect ratio) so the image never enters the caption band.
 	if (capTop && top + h > capTop - GAP) {
 		const k = (capTop - GAP - top) / h;
@@ -85,21 +99,34 @@ const ImgCut: React.FC<{seg: Seg; top: number; shadow: boolean}> = ({seg, top, s
 // the collage lands under the word. Reported from a published reel, not theorised.
 const COLLAGE_TOP = 150;
 
+// Both overridable: on a tight selfie the whole overlay has to move off the face and
+// down onto the chest, collage included, or the hook opens with a grid over the head.
+
 const Collage: React.FC<{images: string[]}> = ({images}) => {
 	// 3x2 square cells: height = 2 cells + 1 gap. Narrow it if burned captions sit high.
-	let pct = 0.68;
+	const cTop = (mapping as {collageTop?: number}).collageTop ?? COLLAGE_TOP;
+	let pct = (mapping as {collageScale?: number}).collageScale ?? 0.68;
 	if (capTop) {
 		const cell = (mapping.width * pct - 8) / 3;
 		const hgt = cell * 2 + 4;
-		if (COLLAGE_TOP + hgt > capTop - GAP) {
-			pct *= (capTop - GAP - COLLAGE_TOP) / hgt;
+		if (cTop + hgt > capTop - GAP) {
+			pct *= (capTop - GAP - cTop) / hgt;
+		}
+	}
+	// A low collage must clear the caption block exactly like a low cutaway does.
+	const cBio = (mapping as {bioTop?: number}).bioTop;
+	if (cBio) {
+		const cell = (mapping.width * pct - 8) / 3;
+		const hgt = cell * 2 + 4;
+		if (cTop + hgt > cBio) {
+			pct *= (cBio - cTop) / hgt;
 		}
 	}
 	return (
 	<div
 		style={{
 			position: 'absolute',
-			top: COLLAGE_TOP,
+			top: cTop,
 			left: `${(100 - pct * 100) / 2}%`,
 			width: `${pct * 100}%`,
 			display: 'grid',

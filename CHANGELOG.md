@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.13.0 — go low: protect the whole face, not just the eyes
+
+The 0.12.0 measurement proved a cutaway "ends above the eyes" and that was used to
+justify a square sitting on the speaker's hair and forehead — the loudest complaint
+this tool has produced, twice in a row. Clearing the eyes was never the bar.
+
+- **`imageScale`, `collageTop`, `collageScale`, `bioTop`** are now mapping keys. A tight
+  selfie has no 443px band that is not the speaker's own face, so the overlay has to be
+  both smaller and lower; the collage moves with it, or the hook opens with a grid on
+  the face. `bioTop` shrinks any low overlay to end above the caption block.
+- **The chest is the free band on a close framing.** A talking head moves; the torso
+  below the collar is flat clothing in every frame. Measured: hair 500, eyes 790, chin
+  1270, collar 1400 — `imageTop` 1400 at `imageScale` 0.37 sits entirely on the shirt.
+- The proof step now asserts the overlay bounding box is below the chin AND above
+  `bioTop`, per beat.
+- **Culture ceiling 85% -> 90%.** Forcing a filler stock photo in to satisfy a ratio is
+  worse for the reel than one more good film scene.
+- Cutaways are read at ~35% of a phone screen in half a second: an extreme close-up of
+  a face fragment, or a dark low-contrast wide shot, is unreadable there. Five images
+  went out that way (Bradley Cooper's eyes, Bilbo's chin, a black-and-white snowy
+  street) plus one that needs the film to make sense at all — The Greatest Showman's
+  bearded lady standing in for "you are extraordinary".
+
 ## 0.12.0 — measure the frame before placing a cutaway
 
 `imageTop` 310 was a constant tuned by hand on one rush. It survived only because every

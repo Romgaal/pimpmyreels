@@ -166,45 +166,48 @@ beats yours. **Write what they swapped** into `~/.pimpmyreels/taste.md`, one lin
 decision — that log is how their choices reach the NEXT reel instead of being
 re-litigated. Never render before explicit human validation.
 
-## 5b. Measure where the cutaway can go — the frame is not a constant
+## 5b. Placement — the frame is not a constant, and the FACE is the thing to protect
 
-`imageTop` 310 was tuned by hand on ONE rush and then applied to every other one. It
-only ever worked because those rushes were framed alike: seated, mid-shot, head low.
-A close handheld selfie breaks it, and so does "just put them at the bottom instead" —
-on that framing the bottom band lands on the speaker's mouth.
+`imageTop` 310 was tuned by hand on one seated mid-shot and then applied to every rush.
+On a close handheld selfie it lands on the speaker's head, which is the single loudest
+complaint this tool has produced. Two rules came out of it, both learned the hard way:
+
+**Protect the whole face, not just the eyes.** A measurement that proved "the cutaway
+ends above the eyes" was used to justify a square sitting squarely on someone's hair
+and forehead. Clearing the eyes is not the bar. Nothing may touch the head at all.
+
+**When the head fills the frame, go LOW — onto the chest.** A talking head moves;
+the torso below the collar is flat clothing in every frame of the take and reads as
+empty space. Measured on a night selfie: hair 500, eyes 790, chin 1270, collar 1400.
+Anything above 1350 grazed the beard; `imageTop` 1400 with `imageScale` 0.37 sits
+entirely on the shirt. Two intermediate attempts (310, then 1150) were both rejected
+before that, and both had passed a check that only looked at the eyes.
 
 ```bash
-python3 scripts/detect_speaker.py ~/pimpmyreels/<name>          # add --write to store imageTop
+python3 scripts/detect_speaker.py ~/pimpmyreels/<name>     # motion-based, --write stores imageTop
+python3 scripts/ruler.py ~/pimpmyreels/<name> [seconds]    # graduated grid on a real frame
 ```
 
-It finds the speaker by motion (a talking face changes pixels, a wall does not), then
-subtracts the platform furniture — measured, not guessed:
+`detect_speaker.py` subtracts the platform's own furniture — Reels header **310**
+(at 235 images still fell under the word), bio band **470** from the bottom, icon rail
+**140** on the right — and reports the free band above and below. **It refuses (exit 2)
+on a handheld rush** rather than invent a number: when the camera shakes, every row
+changes and the speaker cannot be isolated. Use the ruler then, and read off the hair,
+eye, chin and collar lines yourself.
 
-| Zone | Rows | Why |
+Four mapping keys carry the result. Set them together — a low cutaway with a high
+collage opens the hook with a grid on the face:
+
+| key | default | meaning |
 |---|---|---|
-| Reels header | top **310** | at 235 images still fell under the word "Reels" |
-| Bio band | last **470** (from 1450 on a 1920 frame) | username, caption, audio ticker |
-| Icon rail | right **140** | like / comment / share / more |
+| `imageTop` | 310 | top edge of every cutaway |
+| `imageScale` | 0.41 | width as a fraction of the frame — shrink it when the free band is thin |
+| `collageTop` / `collageScale` | 150 / 0.68 | the same two for the intro collage |
+| `bioTop` | — | the caption/username/audio block; overlays are shrunk to end above it |
 
-It prints the free band above and below the speaker and the `imageTop` that centres a
-cutaway in whichever fits. **Bottom placement is a real option** — it just has to be
-measured, not assumed.
-
-**On a handheld rush it refuses (exit 2) instead of inventing a number**: when the
-camera shakes, every row changes and the speaker cannot be separated from the street
-behind them. It points at the ruler:
-
-```bash
-python3 scripts/ruler.py ~/pimpmyreels/<name> [seconds]     # writes ruler.png
-```
-
-which draws a graduated grid plus the three platform lines on a real frame. Read off
-the hair line, the eye line and the shoulder line, then set `imageTop` so the cutaway
-**ends above the eyes**. Measured on a night selfie: hair 500, eyes 790, mouth 1080,
-shoulders 1400 — so the top band held only 190px, the bottom none at all, and the
-standard 310 (ending at 753) was right after all because it covers hair and clears
-eyes. Prove it afterwards: diff a frame with and without the overlay and check the
-bounding box against the three zones.
+**Prove it after rendering, on every beat**: diff each frame against the rush, take the
+bounding box, and assert it sits below the chin line and above `bioTop`. The eye-only
+check passed on a reel the author rejected on sight.
 
 ## 6. mapping.json — generated, never hand-written
 
