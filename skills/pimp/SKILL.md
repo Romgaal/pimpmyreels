@@ -176,7 +176,14 @@ complaint this tool has produced. Two rules came out of it, both learned the har
 ends above the eyes" was used to justify a square sitting squarely on someone's hair
 and forehead. Clearing the eyes is not the bar. Nothing may touch the head at all.
 
-**When the head fills the frame, go LOW — onto the chest.** A talking head moves;
+**Above the head, if there is room, is what the author actually wants** — but measure
+the HIGHEST the head reaches across the WHOLE take, not one frame. On the night selfie
+the hair peaked at 370 while the Reels header ends at 310: 60px, so no square fits.
+The band was short and WIDE, so the answer was a landscape strip (424x244 at y 118) and
+a 3x2 collage of landscape cells (643x247) — both ending at 366, four pixels clear of
+the hair, verified on every beat.
+
+**When even that is impossible, go LOW — onto the chest.** A talking head moves;
 the torso below the collar is flat clothing in every frame of the take and reads as
 empty space. Measured on a night selfie: hair 500, eyes 790, chin 1270, collar 1400.
 Anything above 1350 grazed the beard; `imageTop` 1400 with `imageScale` 0.37 sits
@@ -203,6 +210,8 @@ collage opens the hook with a grid on the face:
 | `imageTop` | 310 | top edge of every cutaway |
 | `imageScale` | 0.41 | width as a fraction of the frame — shrink it when the free band is thin |
 | `collageTop` / `collageScale` | 150 / 0.68 | the same two for the intro collage |
+| `collageRows` / `collageAspect` | 2 / 1 | grid shape. When the only free band is short and wide, `collageAspect` 0.575 keeps the 3x2 grid the author expects and makes it nearly twice as wide as square cells would be at the same height — do that rather than dropping to a single row of 3 |
+| `imageFormat` | square | `landscape` when the free band is short and wide; 16:9 also suits film stills better than a 1:1 crop |
 | `bioTop` | — | the caption/username/audio block; overlays are shrunk to end above it |
 
 **Prove it after rendering, on every beat**: diff each frame against the rush, take the
@@ -216,7 +225,14 @@ bash scripts/init_mapping.sh ~/pimpmyreels/<name>     # fps / size / durationInF
 python3 scripts/brief.py mapping ~/pimpmyreels/<name> # segments from the brief (+ collage)
 ```
 
-- `start` comes from the sentence timecodes in the brief (3-frame lead applied).
+- `start` is **snapped to the word stream**, not taken from the brief's hand-written
+  time. `brief.py mapping` matches each beat's `sentence` against `words.json` and uses
+  where it actually starts being spoken, then adds **+2 frames**. Beat times written by
+  hand drift — one was 2.3s early on a delivered reel, and the old **3-frame LEAD made
+  it worse**: every cutaway arrived before the words it illustrates. A cut that lands a
+  hair late reads as intentional; one that lands early reads as broken. The snap prints
+  every correction it makes; a match more than 2.5s away is treated as a coincidence
+  and the declared time is kept.
 - **Collage**: list 6 validated images in the brief's `collage` — no text on it, the user
   adds titles in Captions. **It holds through the ENTIRE hook line** (`collageMinSeconds`,
   3 s floor); the template drops any cutaway swallowed underneath and starts the next one

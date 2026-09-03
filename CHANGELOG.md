@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.13.1 — snap cutaways to the words, and fit the band you actually have
+
+- **Beat starts are snapped to `words.json`.** `brief.py mapping` matches each beat's
+  sentence against the word stream and uses where it actually starts being spoken. On a
+  delivered reel every cutaway arrived before the words it illustrated; one was 2.3s
+  early. Thirteen of seventeen beats moved.
+- **The 3-frame LEAD becomes a 2-frame delay.** The lead was meant to land the image on
+  the word and, combined with hand-written times, guaranteed it arrived before. A cut
+  that lands a hair late reads as intentional; one that lands early reads as broken.
+- **`collageRows` and `collageAspect`.** A short, wide free band cannot take a 3x2 grid
+  of square cells — but it takes a 3x2 grid of LANDSCAPE cells, nearly twice as wide at
+  the same height. Dropping to a single row of 3 was the wrong trade and the author said
+  so. `imageFormat: landscape` for the cutaways themselves, for the same reason.
+- Placement rule sharpened: measure the highest the head reaches across the WHOLE take.
+  Here the hair peaked at 370 against a header ending at 310 — 60px, no square fits, so
+  a 424x244 strip at y 118 it is, ending at 366.
+
 ## 0.13.0 — go low: protect the whole face, not just the eyes
 
 The 0.12.0 measurement proved a cutaway "ends above the eyes" and that was used to

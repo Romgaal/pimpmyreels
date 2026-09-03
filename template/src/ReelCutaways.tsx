@@ -106,9 +106,17 @@ const Collage: React.FC<{images: string[]}> = ({images}) => {
 	// 3x2 square cells: height = 2 cells + 1 gap. Narrow it if burned captions sit high.
 	const cTop = (mapping as {collageTop?: number}).collageTop ?? COLLAGE_TOP;
 	let pct = (mapping as {collageScale?: number}).collageScale ?? 0.68;
+	// 3x2 by default. On a framing whose only free band is SHORT AND WIDE — above the
+	// head of a close selfie — a 2-row grid cannot fit, but a single row of 3 can.
+	const rows = (mapping as {collageRows?: number}).collageRows ?? 2;
+	const per = rows === 1 ? 3 : 6;
+	// Square cells by default. When the only free band is short and wide, LANDSCAPE
+	// cells keep the 3x2 grid the author wants and make it nearly twice as wide as the
+	// square version would be at the same height.
+	const cellAspect = (mapping as {collageAspect?: number}).collageAspect ?? 1;
 	if (capTop) {
-		const cell = (mapping.width * pct - 8) / 3;
-		const hgt = cell * 2 + 4;
+		const cell = ((mapping.width * pct - 8) / 3) * cellAspect;
+		const hgt = cell * rows + 4 * (rows - 1);
 		if (cTop + hgt > capTop - GAP) {
 			pct *= (capTop - GAP - cTop) / hgt;
 		}
@@ -116,8 +124,8 @@ const Collage: React.FC<{images: string[]}> = ({images}) => {
 	// A low collage must clear the caption block exactly like a low cutaway does.
 	const cBio = (mapping as {bioTop?: number}).bioTop;
 	if (cBio) {
-		const cell = (mapping.width * pct - 8) / 3;
-		const hgt = cell * 2 + 4;
+		const cell = ((mapping.width * pct - 8) / 3) * cellAspect;
+		const hgt = cell * rows + 4 * (rows - 1);
 		if (cTop + hgt > cBio) {
 			pct *= (cBio - cTop) / hgt;
 		}
@@ -134,10 +142,10 @@ const Collage: React.FC<{images: string[]}> = ({images}) => {
 			gap: 4,
 		}}
 	>
-		{images.slice(0, 6).map((im, i) => (
+		{images.slice(0, per).map((im, i) => (
 			<div
 				key={i}
-				style={{aspectRatio: '1', borderRadius: 4, overflow: 'hidden'}}
+				style={{aspectRatio: `${1 / cellAspect}`, borderRadius: 4, overflow: 'hidden'}}
 			>
 				<Media src={im} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
 			</div>

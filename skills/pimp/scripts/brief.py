@@ -170,18 +170,70 @@ def cmd_source(proj):
         print(f'{os.path.basename(out)}: {got}  [{b.get("engine", "auto")}] {b["query"][:50]}')
 
 
+def norm(t):
+    return re.sub(r"[^a-z0-9]", "", t.lower().replace("'", ""))
+
+
+def word_stream(proj):
+    """Word-level timings from words.json: [(start_seconds, normalised_token), ...]."""
+    p = os.path.join(proj, 'words.json')
+    if not os.path.exists(p):
+        return []
+    out = []
+    for x in json.load(open(p)).get('transcription', []):
+        n = norm(x.get('text', ''))
+        if n:
+            out.append((x['offsets']['from'] / 1000.0, n))
+    return out
+
+
+def snap(words, sentence, declared):
+    """Where does this beat's sentence actually START being spoken?
+
+    Beat times written by hand drift by a few tenths — enough for the author to see
+    every image land before the words it illustrates. The sentence text is matched
+    against the word stream (whisper splits into sub-word tokens, so the comparison is
+    on a concatenation, not token-by-token) and the match nearest the declared time
+    wins. Falls back to the declared time when nothing matches.
+    """
+    key = norm(sentence)[:24]
+    if not words or len(key) < 6:
+        return declared
+    best, bestd = None, 1e9
+    for i in range(len(words)):
+        acc = ''
+        for j in range(i, min(i + 14, len(words))):
+            acc += words[j][1]
+            if len(acc) >= len(key):
+                break
+        if acc.startswith(key):
+            d = abs(words[i][0] - declared)
+            if d < bestd:
+                best, bestd = words[i][0], d
+    # A match more than 2.5s from the declared time is a coincidence, not this beat.
+    return best if best is not None and bestd <= 2.5 else declared
+
+
 def cmd_mapping(proj):
     brief = load(proj, 'brief.json')
     m = load(proj, 'mapping.json')
     fps = m['fps']
-    F = lambda s: max(0, round(s * fps) - 3)   # 3-frame lead: the image lands ON the word
+    words = word_stream(proj)
+    # +2 frames, not -3. The old 3-frame LEAD was meant to make the image land on the
+    # word; combined with hand-written beat times it made every cutaway arrive before
+    # the words it illustrates — reported on a delivered reel. A cut that lands a hair
+    # late reads as intentional; one that lands early reads as broken.
+    F = lambda s: max(0, round(s * fps) + 2)
     segs = []
     if brief.get('collage'):
         segs.append({'start': 0, 'type': 'collage', 'images': brief['collage']})
     for b in active(brief):
         if not b.get('image'):
             continue
-        seg = {'start': F(b['start']), 'image': b['image']}
+        at = snap(words, b.get('sentence', ''), b['start'])
+        if abs(at - b['start']) > 0.05:
+            print(f'  snap @{b["start"]:.2f} -> {at:.2f}  "{b.get("sentence","")[:34]}"')
+        seg = {'start': F(at), 'image': b['image']}
         if b.get('images'):
             seg['images'] = b['images']
         if b.get('speaker'):
