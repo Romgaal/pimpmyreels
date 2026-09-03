@@ -166,6 +166,46 @@ beats yours. **Write what they swapped** into `~/.pimpmyreels/taste.md`, one lin
 decision — that log is how their choices reach the NEXT reel instead of being
 re-litigated. Never render before explicit human validation.
 
+## 5b. Measure where the cutaway can go — the frame is not a constant
+
+`imageTop` 310 was tuned by hand on ONE rush and then applied to every other one. It
+only ever worked because those rushes were framed alike: seated, mid-shot, head low.
+A close handheld selfie breaks it, and so does "just put them at the bottom instead" —
+on that framing the bottom band lands on the speaker's mouth.
+
+```bash
+python3 scripts/detect_speaker.py ~/pimpmyreels/<name>          # add --write to store imageTop
+```
+
+It finds the speaker by motion (a talking face changes pixels, a wall does not), then
+subtracts the platform furniture — measured, not guessed:
+
+| Zone | Rows | Why |
+|---|---|---|
+| Reels header | top **310** | at 235 images still fell under the word "Reels" |
+| Bio band | last **470** (from 1450 on a 1920 frame) | username, caption, audio ticker |
+| Icon rail | right **140** | like / comment / share / more |
+
+It prints the free band above and below the speaker and the `imageTop` that centres a
+cutaway in whichever fits. **Bottom placement is a real option** — it just has to be
+measured, not assumed.
+
+**On a handheld rush it refuses (exit 2) instead of inventing a number**: when the
+camera shakes, every row changes and the speaker cannot be separated from the street
+behind them. It points at the ruler:
+
+```bash
+python3 scripts/ruler.py ~/pimpmyreels/<name> [seconds]     # writes ruler.png
+```
+
+which draws a graduated grid plus the three platform lines on a real frame. Read off
+the hair line, the eye line and the shoulder line, then set `imageTop` so the cutaway
+**ends above the eyes**. Measured on a night selfie: hair 500, eyes 790, mouth 1080,
+shoulders 1400 — so the top band held only 190px, the bottom none at all, and the
+standard 310 (ending at 753) was right after all because it covers hair and clears
+eyes. Prove it afterwards: diff a frame with and without the overlay and check the
+bounding box against the three zones.
+
 ## 6. mapping.json — generated, never hand-written
 
 ```bash

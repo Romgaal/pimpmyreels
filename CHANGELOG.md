@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.12.0 — measure the frame before placing a cutaway
+
+`imageTop` 310 was a constant tuned by hand on one rush. It survived only because every
+rush so far was framed alike. Asked whether images could go at the bottom instead, the
+honest answer turned out to be "measure it": on a close handheld selfie the bottom band
+lands on the speaker's mouth, and the top band holds 190px, not 443.
+
+- **`detect_speaker.py`** finds the speaker by motion, subtracts the measured platform
+  furniture (Reels header 310, bio band 470 from the bottom, icon rail 140 on the
+  right), and reports the free band above and below with the `imageTop` that centres a
+  cutaway in it. Bottom placement is a supported outcome, not a guess. Validated
+  against four real rushes: on the three seated ones it independently lands on ~240,
+  next to the 310 that had been tuned by hand.
+- **It refuses on a handheld rush (exit 2)** rather than inventing a number: when the
+  camera shakes every row changes and the speaker cannot be isolated. A number invented
+  there would put a cutaway on someone's mouth.
+- **`ruler.py`** draws a graduated grid and the three platform lines on a real frame,
+  so the hair line, eye line and shoulder line get READ. That is how this reel was
+  placed: hair 500, eyes 790, shoulders 1400.
+- SKILL.md gains step 5b, and the proof step now checks the overlay bounding box
+  against all three zones.
+
 ## 0.11.1 — named objects escape the abstraction ban
 
 `validate_picks.py` refused "sa boîte de chocolats sur les genoux" — Forrest Gump's own
