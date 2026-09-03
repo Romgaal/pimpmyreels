@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.11.1 — named objects escape the abstraction ban
+
+`validate_picks.py` refused "sa boîte de chocolats sur les genoux" — Forrest Gump's own
+prop — under the bare-box rule written to catch a cardboard box standing in for
+"putting yourself in a box". `box` and `boîte` now only fire when nothing follows them:
+"boîte de chocolats" and "box of chocolates" pass, "une boîte posée sur une table" does
+not. Same fix in spirit as the earlier one that had refused "Jim Carrey" and "Rubik's
+cube": the net is for lazy abstractions, never for a named object that IS the reference.
+
+`idea-bank.md` gains ten rows from the synchronicity reel: the tesseract for "the
+universe arranged it", Arrival's shell for awe, the Ancient One for spiritual
+awakening, Truman's falling light rig for the first sign, Neo reading the code for
+seeing what was always there, Before Sunrise for the chance encounter, the Grand
+Budapest façade for "too perfect", Louise's logograms for meaning revealed, Gump's
+bench for a life's encounters, and his feather for the small sign drifting by.
+
 ## 0.11.0 — cinema is the base material
 
 The author's verdict on the first briefed reel: "un peu mieux, garde cette logique.

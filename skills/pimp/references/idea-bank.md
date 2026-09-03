@@ -43,6 +43,16 @@ Rule of thumb: **the more abstract the sentence, the more concrete the picture.*
 | Doubt, indecision, flip-flopping | **Dark Knight** — Two-Face's coin · **Hamlet** | Magic 8-ball · Shrug 🤷 | A compass needle · a coin mid-air |
 | Society's rules, the norm, conformity | **Fight Club** — Norton in the office · **The Matrix** — the agents · **Pleasantville** · **Equilibrium** | NPC meme | Identical suits on a platform · a row of grey doors |
 | Attention, distraction, the feed | **Social Dilemma** · **Wall-E** — the hover chairs | Distracted boyfriend (careful: it narrates cheating) | Thumb scrolling a feed, face lit blue |
+| Synchronicity, signs, "not a coincidence" | **Interstellar** — Cooper inside the tesseract · **Signs** (Shyamalan) · **Slumdog Millionaire** — every answer came from his life · **Magnolia** — the frogs · **Le Fabuleux Destin d'Amélie Poulain** | — | A row of dominoes mid-fall |
+| Awe, something far larger than you | **Arrival** — the shell hovering over the misty valley · **Contact** · **2001** · **Close Encounters** | — | One person on a dune under the Milky Way |
+| Spiritual awakening, eyes opening | **Doctor Strange** — the Ancient One's kaleidoscope · **The Matrix** — waking up · **2001** — the stargate | — | — |
+| The first sign that changes everything | **The Truman Show** — the light rig falling in the street · **The Matrix** — the black cat | — | — |
+| Seeing what was always there | **The Matrix** — Neo reading the green code · **A Beautiful Mind** · **Limitless** | — | — |
+| A chance encounter that shouldn't have happened | **Before Sunrise** — Jesse and Céline on the train · **Serendipity** · **In the Mood for Love** | — | Two strangers on the same platform |
+| Too perfect to be accidental | **The Grand Budapest Hotel** — the symmetrical pink façade · any Wes Anderson · Kubrick's one-point perspective | — | A perfectly symmetrical staircase |
+| Meaning finally revealed, understanding | **Arrival** — Louise reading the circular logograms · **Contact** · **The Imitation Game** | — | — |
+| All the encounters of a life | **Forrest Gump** — the bench · **Cloud Atlas** · **Amélie** | — | — |
+| A small sign drifting to you | **Forrest Gump** — the white feather · **American Beauty** — the plastic bag | — | A feather caught in light |
 | Memory, forgetting | **Memento** · **Eternal Sunshine** · **Finding Nemo** — Dory | — | A Polaroid fading · a string on a finger |
 
 ## How to use it

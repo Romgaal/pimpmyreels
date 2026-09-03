@@ -32,12 +32,17 @@ import sys
 import textwrap
 from PIL import Image, ImageDraw, ImageFont
 
-# Anchored on BOTH sides: an early version lacked the closing \b and refused "Jim
-# Carrey" (carr[ée]) and "Rubik's cube" (cube) — the net must catch lazy abstractions,
-# not actors and puzzles. Named objects that ARE the reference stay allowed.
+# Anchored on BOTH sides, and NAMED objects escape: an early version lacked the closing
+# \b and refused "Jim Carrey" (carr[ée]) and "Rubik's cube" (cube); a later one refused
+# "boîte de chocolats" (Forrest Gump's own prop) on the bare-box rule. The net exists to
+# catch a LAZY abstraction — "a cardboard box" standing in for "putting yourself in a
+# box" — not a named object that IS the reference. So "box"/"boîte" only fire when
+# nothing follows them: "boîte de chocolats" and "box of chocolates" pass, "une boîte"
+# does not.
 BAN = re.compile(r"\b(gradient|d[ée]grad[ée]|texture|pattern|motif|abstract|abstrait|blur|"
                  r"flou|bokeh|silhouette|shape|forme|rectangle|square|carr[ée]s?|stranger|"
-                 r"inconnu|random|generic|g[ée]n[ée]rique|stock|cardboard|carton|box|bo[iî]te|"
+                 r"inconnu|random|generic|g[ée]n[ée]rique|stock|cardboard|carton|"
+                 r"box(?! of \w)|bo[iî]tes?(?! (de|à) \w)|"
                  r"mug|cup|tasse|fabric|tissu|(?<![Rr]ubik.s )cubes?|colou?r field|aplat|wall|"
                  r"mur|portrait of a (man|woman)|portrait d.un)\b", re.I)
 CULTURE = {'film', 'meme', 'gif', 'icon'}
