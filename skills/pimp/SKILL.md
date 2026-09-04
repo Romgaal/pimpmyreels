@@ -86,8 +86,17 @@ python3 scripts/brief.py init ~/pimpmyreels/<name>     # one beat per sentence, 
 | `scene` | **one concrete picture** a viewer recognises as that idea *without the words*: a human moment, a cultural reference, a graphic object with an obvious reading | a keyword; anything abstract (gradient, texture, pattern, shape, silhouette) |
 | `register` | `film` `meme` `gif` `icon` `photo` `graphic` | culture (`film`+`meme`+`gif`+`icon`) outside **50–85 %**; `graphic` over 20 % |
 | `refs` | the film / series / meme / artwork you **considered**, even when a photo wins | empty — an editor with no reference in mind ships stock |
-| `query` | what the **engine** needs: title + actor + moment, or subject + action + framing | a copy of `scene` |
+| `query` | what the **engine** needs. Film: title + actor + moment. Everything else: **a description of the PHOTOGRAPH** — subject + action + light + framing, six words minimum | a copy of `scene`; a bare concept noun (refused under 6 words) |
 | `engine` | `ddg` for films/memes/gifs, `unsplash` for photos, `wikimedia` for icons | — |
+
+**Describe the photograph, never name the concept.** A stock engine matches words in
+captions, so `simulation` returns a Penrose triangle and two VR headsets, while `face
+with glowing code projected onto skin, dark blue light, extreme close up` returns the
+image you actually wanted — same engine, same minute. `overthinking` returns a graphic
+reading DON'T OVERTHINK; `man sitting on floor in dark room, single lamp, head in
+hands, cinematic` returns the picture. This is the single biggest quality lever in the
+tool, and it is why Pinterest feels like a goldmine — its search understands a vibe.
+`brief.py check` refuses a non-culture query under six words.
 
 **The one rule under all of it: illustrate the IDEA, never the WORD.** "Spiritual" is a
 monk, not a pink rectangle. "Degree" is an amp that goes to eleven, not a thermometer.

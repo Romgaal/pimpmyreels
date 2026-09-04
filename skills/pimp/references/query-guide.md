@@ -1,4 +1,52 @@
-# Query guide — how to search for a scene still
+# Query guide
+
+## The one rule that changed the most: describe the PHOTOGRAPH, not the concept
+
+A stock engine matches words in captions. Give it a concept noun and it returns pictures
+whose captions contain that noun — which is literal, generic and lifeless. Give it a
+description of a photograph and it returns that photograph. Measured side by side, same
+engine, same minute:
+
+| Query | What comes back |
+|---|---|
+| `simulation` | a Penrose triangle, two VR headsets |
+| `face with glowing code projected onto skin, dark blue light, extreme close up` | a face constellated with light in darkness — the actual image |
+| `overthinking` | a graphic that reads DON'T OVERTHINK |
+| `man sitting on floor in dark room, single lamp, head in hands, cinematic` | a man alone under a single light, cinematic |
+
+This is why Pinterest feels like a goldmine: its search understands a *vibe*. That
+search is unreachable (see the Pinterest section below), but the images are not — the
+same engines return them once the query describes the picture.
+
+**The shape**: subject + action + light + framing. Six words minimum for any non-culture
+beat; `brief.py check` refuses fewer.
+
+- subject: *who or what is in frame* — "a man", "two hands", "a red umbrella"
+- action: *what is happening* — "sitting on the floor", "holding out two pills"
+- light: *the mood, in light terms* — "single lamp", "dark blue light", "warm backlight",
+  "night, neon reflections"
+- framing: "extreme close up", "medium shot", "from above", "cinematic"
+
+**For a film**, the shape is different and shorter: title + actor + moment
+(`Morpheus red pill blue pill hands`). Never the title alone — that returns the poster
+with its title card burned in, measured three times out of three on Lucy.
+
+## Pinterest
+
+Pinterest's own search cannot be automated. Measured, with a real API token:
+
+- `/v5/user_account`, `/v5/boards`, `/v5/pins` -> 401 *"Your application consumer type
+  is not supported"* — the app needs Pinterest's approval.
+- `/v5/search/partner/pins` -> 401 *"does not have access to this restricted feature:
+  **pin_search**"* — global pin search is gated behind commercial partner approval, so
+  even an approved app does not get it.
+- The internal `/resource/` API returns 403 without session cookies, `/search/pins/`
+  renders in JavaScript, and an automated browser is served a blank page.
+
+What IS open: the RSS feed of a public board (`pinterest.com/<user>/<board>.rss`), which
+`scripts/pinboard.py` syncs. Use it for boards a person genuinely curates — but do not
+treat it as the answer to sourcing, because the automatable answer is the query rule
+above.
 
 The formula, always in **English** (the indexes are English, even for French films):
 

@@ -117,11 +117,26 @@ def cmd_check(proj):
             errs.append(f'{tag}: refs is empty — name at least one film/series/meme/artwork '
                         f'you CONSIDERED, even if a photo wins')
         q = b.get('query', '').strip()
+        reg = b.get('register')
         if not q:
             errs.append(f'{tag}: query is empty')
         elif q.lower() == scene.lower():
             errs.append(f'{tag}: query is a copy of scene — the query is what the ENGINE '
                         f'needs (film title + actor + moment; or subject + action + framing)')
+        elif reg not in CULTURE and len(q.split()) < 6:
+            # MEASURED, and it is the single biggest quality lever found so far.
+            # "simulation" returns a Penrose triangle and two VR headsets. "face with
+            # glowing code projected onto skin, dark blue light, extreme close up"
+            # returns the image the author actually wanted — same engine, same second.
+            # "overthinking" returns a graphic reading DON'T OVERTHINK; "man sitting on
+            # floor in dark room, single lamp, head in hands, cinematic" returns the
+            # picture. A stock engine matches WORDS IN CAPTIONS, so a concept noun finds
+            # pictures captioned with that noun — literal, generic, lifeless. Describe
+            # the PHOTOGRAPH: subject + action + light + framing, six words minimum.
+            errs.append(f'{tag}: query "{q}" is a concept, not a photograph. Stock engines '
+                        f'match caption words, so a bare concept returns literal stock. '
+                        f'Describe the picture: subject + action + light + framing '
+                        f'(>= 6 words). See references/query-guide.md.')
     n, cult, graph = mix_report(beats)
     if n:
         share = cult / n

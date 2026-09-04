@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.15.0 — describe the photograph, not the concept
+
+Asked to reach Pinterest, the honest measurement came back negative on every automated
+route — and produced something better.
+
+**Pinterest, measured with a real API token:** `/v5/user_account`, `/v5/boards` and
+`/v5/pins` all return 401 *"Your application consumer type is not supported"*, so the
+app needs Pinterest's approval. More decisively, `/v5/search/partner/pins` returns 401
+*"does not have access to this restricted feature: pin_search"* — global pin search is
+gated behind commercial partner approval, so even an approved app would not get it. The
+internal API is 403 without cookies, the search page renders in JavaScript, and an
+automated browser is served a blank page. Pinterest search cannot be automated.
+
+**What actually mattered:** the problem was never the source, it was the query. A stock
+engine matches words in captions, so a concept noun returns pictures captioned with that
+noun — literal and lifeless. Measured side by side, same engine, same minute:
+`simulation` returns a Penrose triangle and two VR headsets; `face with glowing code
+projected onto skin, dark blue light, extreme close up` returns the image the author
+was actually asking for. `overthinking` returns a graphic that reads DON'T OVERTHINK;
+`man sitting on floor in dark room, single lamp, head in hands, cinematic` returns the
+picture.
+
+- **`brief.py check` now refuses a non-culture query under six words**, with the shape
+  spelled out: subject + action + light + framing.
+- `references/query-guide.md` rewritten around this rule, with the measured comparisons
+  and the full Pinterest findings.
+
 ## 0.14.0 — your own Pinterest boards as an image source
 
 Pinterest is where the good picture for an abstract word lives, and its own search is
