@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.14.0 — your own Pinterest boards as an image source
+
+Pinterest is where the good picture for an abstract word lives, and its own search is
+unreachable: the internal /resource/ API returns 403 without session cookies,
+/search/pins/ renders in JavaScript, and an automated browser is served a blank page.
+Reaching it through the search engines' index instead gets the CDN but not the taste —
+measured, "overthinking mind" came back as beach photos and city skylines.
+
+The RSS feed of a PUBLIC board, however, needs no authentication at all. So the flow
+inverts: you pin what you like, and the tool reads your board.
+
+- **`scripts/pinboard.py sync | list | search`** pulls every board listed in
+  `~/.pimpmyreels/boards.txt` (one public board per line, optional `| tag`) and stores
+  the pins locally with their titles. Incremental — already-downloaded pins are skipped.
+- **`--engine pinboard`** sources a beat from those pins, matched on the words in their
+  own titles. It returns local paths, and the pipeline now reads them off disk instead
+  of over the network.
+- **`--engine pinterest`** also exists (pins found via the search engines) but is
+  documented for what it is: the CDN without the taste.
+- Two measured details: the `/originals/` rewrite is required, not cosmetic — every
+  sized variant 403s to a plain client, and one pin went from 236x158 to 6016x4016 —
+  and about half of all pins have no original, so the sync falls back through /1200x/,
+  /736x/, /564x/. That fallback took a 24-pin feed from 11 downloaded / 12 failed to
+  21 / 0.
+- `engine_pinterest` prints an explicit warning when it finds nothing, because
+  DuckDuckGo throttles by returning an empty list rather than an error — the same
+  silent-failure shape that hid the broken DDG engine for months.
+
 ## 0.13.1 — snap cutaways to the words, and fit the band you actually have
 
 - **Beat starts are snapped to `words.json`.** `brief.py mapping` matches each beat's

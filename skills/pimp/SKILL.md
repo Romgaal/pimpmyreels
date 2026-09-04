@@ -131,6 +131,36 @@ gifs. **Unsplash** for design photography (50 req/h). **Wikimedia** for historic
 figures and artworks. **Bing** as fallback. `--bank-max 0` keeps every reel fresh;
 `--format landscape` only for a wide meme gif whose text a square crop would amputate.
 
+## 4b. Your own Pinterest boards — the best source for an abstract idea
+
+Pinterest is where the good picture for an abstract word lives: composed, editorial,
+chosen by a person. Its own search is what makes it a goldmine, and that search is
+exactly what cannot be reached — the internal `/resource/` API returns 403 without
+session cookies, `/search/pins/` renders in JavaScript (one image in a 1MB document),
+and an automated browser is served a blank page. Going through the search engines'
+index of Pinterest instead (`--engine pinterest`) reaches the CDN but not the taste:
+measured, "overthinking mind" came back as beach photos and city skylines.
+
+**What is open, with no authentication at all, is the RSS feed of a public board.** So
+invert the flow: the person browses Pinterest — which they enjoy and are better at than
+any query string — and pins what they like. Then:
+
+```bash
+python3 scripts/pinboard.py sync                    # pulls every board in ~/.pimpmyreels/boards.txt
+python3 scripts/pinboard.py list                    # what you have, by tag
+python3 scripts/source_images.py --engine pinboard --query "<words>" ...
+```
+
+`~/.pimpmyreels/boards.txt` holds one public board per line, with an optional `| tag`.
+Sync is incremental, so run it whenever new pins are added. Pins are matched to a beat
+by the words in their own titles, so a board whose pins have real titles searches well.
+
+Two measured details worth keeping: the feed carries `/236x/` thumbnails and the
+rewrite to `/originals/` is **required**, not merely nicer — one pin went from 236x158
+to 6016x4016 — and about half of all pins have no `/originals/`, so the sync falls back
+through `/1200x/`, `/736x/`, `/564x/` before giving up (that fallback took a 24-pin
+feed from 11 downloaded / 12 failed to 21 / 0).
+
 ## 5. Look, name, validate — THE semantic gate (BLOCKING)
 
 ```bash

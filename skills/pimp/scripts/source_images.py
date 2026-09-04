@@ -112,6 +112,77 @@ def engine_ddg(q, gif=False, fmt='square'):
         return []
 
 
+def engine_pinboard(q, gif=False, fmt='square'):
+    """The user's OWN synced Pinterest boards — see scripts/pinboard.py.
+
+    This is the good Pinterest, the one behind the login wall, reached from the other
+    side: the person pins what they like, `pinboard.py sync` pulls the board down over
+    RSS, and those pins become candidates here. Returns local file paths, which the
+    caller copies rather than downloads.
+    """
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import pinboard
+        return pinboard.search(q, 8)
+    except Exception:
+        return []
+
+
+def engine_pinterest(q, gif=False, fmt='square'):
+    """Pinterest — the register the other engines cannot reach.
+
+    Not stock photography and not memes: composed, moody, editorial images that
+    someone chose to save. The author put it plainly — "c'est une pepite d'or cet
+    endroit, y'a tellement d'images incroyable" — and he is right: for an abstract
+    idea (simulation, overthinking, loneliness) Pinterest has the subtle picture that
+    Unsplash answers with a laptop on a desk.
+
+    Getting at it takes a detour. The internal /resource/ API returns 403 without a
+    CSRF token and session cookies; the public /search/pins/ page renders its results
+    in JavaScript (one image in a 1MB document); and an automated browser is served a
+    blank page. What DOES work is that Pinterest images are indexed: a DuckDuckGo image
+    search with "pinterest" appended returns 13-19 i.pinimg.com URLs out of 40 —
+    measured — which is plenty when three candidates are needed.
+
+    The URLs come back as whatever thumbnail size the indexer saw (/236x/, /474x/).
+    Rewriting the size segment to /originals/ is not just for quality, it is required:
+    measured, /originals/ returns 200 while every sized variant returns 403 to a plain
+    client. There is no thumbnail fallback because a thumbnail cannot be fetched.
+    """
+    # Which phrasing surfaces pins is not obvious and was measured: "site:pinterest.com"
+    # returns almost nothing on either engine, while appending "pinterest" (DDG) or
+    # "pinterest pin" / "aesthetic pin" (Bing) does. Try them in order and stop as soon
+    # as enough pins are in hand.
+    variants = [(engine_ddg, q + ' pinterest'),
+                (engine_bing, q + ' pinterest pin'),
+                (engine_bing, q + ' aesthetic pin'),
+                (engine_ddg, q + ' aesthetic pinterest')]
+    seen, uniq = set(), []
+    for fn, qq in variants:
+        try:
+            urls = fn(qq, gif, fmt)
+        except Exception:
+            continue
+        for u in urls:
+            if 'i.pinimg.com' not in u:
+                continue
+            # MEASURED: /originals/ returns 200, every sized variant (/236x/, /736x/…)
+            # returns 403 to a plain client. So rewrite, and never keep the thumbnail
+            # as a fallback — it cannot be fetched at all.
+            big = re.sub(r'i\.pinimg\.com/\d+x\d*/', 'i.pinimg.com/originals/', u)
+            if big not in seen:
+                seen.add(big)
+                uniq.append(big)
+        if len(uniq) >= 12:
+            break
+    if not uniq:
+        # Say it. A silent empty return is how engine_ddg stayed broken for months.
+        print('  pinterest: no pins found. DuckDuckGo throttles after a burst of queries '
+              '(it returns an empty list, not an error) — wait a few minutes, or source '
+              'this beat with --engine unsplash.', file=sys.stderr)
+    return uniq
+
+
 def engine_openverse(q, gif=False, fmt='square'):
     """Openverse — the Creative Commons aggregator (Flickr, Wikimedia, museums...).
     No key, generous quota, and a register the stock engines do not cover:
@@ -250,6 +321,8 @@ def scrape(q, out, n, gif, fmt='square', engine='auto'):
         'ddg': (engine_ddg,),
         'openverse': (engine_openverse,),
         'wikimedia': (engine_wikimedia,),
+        'pinterest': (engine_pinterest,),
+        'pinboard': (engine_pinboard,),
     }.get(engine, (engine_bing, engine_ddg, engine_openverse))
     for eng in engines:
         if len(got) >= n:
@@ -264,7 +337,9 @@ def scrape(q, out, n, gif, fmt='square', engine='auto'):
             if any(b in u.lower() for b in block):
                 continue
             try:
-                data = fetch(u, 15)
+                # engine_pinboard returns LOCAL paths (already-synced pins), not URLs:
+                # read them off disk instead of over the network.
+                data = open(u, 'rb').read() if os.path.exists(u) else fetch(u, 15)
                 if gif and u.lower().endswith('.gif'):
                     if len(data) < 30000 or not valid_gif(data):
                         continue
@@ -300,10 +375,15 @@ if __name__ == '__main__':
                     help='intended display format: square, landscape or portrait '
                          '(mode-2 backgrounds) — drives the aspect filter (default square)')
     ap.add_argument('--engine',
-                    choices=['auto', 'unsplash', 'ddg', 'openverse', 'wikimedia'], default='auto',
+                    choices=['auto', 'unsplash', 'ddg', 'openverse', 'wikimedia',
+                             'pinterest', 'pinboard'], default='auto',
                     help='auto: bing + duckduckgo + openverse (film stills, memes, documentary); '
                          'unsplash: design photography (needs UNSPLASH_ACCESS_KEY); '
                          'ddg: best for gifs (indexes Tenor/GifDB); '
+                         'pinboard: YOUR OWN synced Pinterest boards (scripts/pinboard.py) '
+                         '— the best source for an abstract idea, because you curated it; '
+                         'pinterest: pins found through the search engines — reaches the '
+                         'CDN but not Pinterest taste, so expect generic results; '
                          'openverse: Creative Commons archives; wikimedia: historical/notable')
     ap.add_argument('--gif', action='store_true')
     ap.add_argument('--reject', help='learn a bad domain (adds it to the local blocklist)')
