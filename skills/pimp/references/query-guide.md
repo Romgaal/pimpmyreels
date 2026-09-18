@@ -31,6 +31,29 @@ beat; `brief.py check` refuses fewer.
 (`Morpheus red pill blue pill hands`). Never the title alone — that returns the poster
 with its title card burned in, measured three times out of three on Lucy.
 
+## Flim — cinema-grade frames for a scene you describe
+
+`--engine flim` searches ~2.1M film/series frames semantically, filtered to close-up and
+medium shots, and returns each frame with its film, year and a caption. It answers the
+SAME query shape as the photograph rule above — subject + action + light + framing — and
+returns cinema instead of stock:
+
+| Query | Flim returns |
+|---|---|
+| `man alone under a single lamp in a dark room, head in hands` | One Hour Photo (2003), Le Doulos (1963), Doctor Mack (1995) |
+| `two people meeting for the first time on a train, smiling` | Source Code (2011) |
+| `person looking at their reflection in a bathroom mirror, doubt` | Reprise (2007), Jackpot (2022) |
+
+It is a visual index, not a title index. `Morpheus offering the red pill and the blue
+pill` finds The Matrix; `Rocky raising his fists at the top of the steps` does not find
+Rocky. Name an iconic scene -> DuckDuckGo. Describe a scene -> Flim.
+
+Measured limits: only the 720p frame is served (larger variants 403), which suits a
+cutaway and not a full-frame background; and the API is Flim's own undocumented backend
+(`api-elysia-prod.flim.ai/2.1.0/search`, schema read from the app's JavaScript), not a
+supported one — the app sends a `feature-flag: blockVisitors` header that reads like a
+gate they can close. Three candidates per beat, cached, never hammered.
+
 ## Pinterest
 
 Pinterest's own search cannot be automated. Measured, with a real API token:

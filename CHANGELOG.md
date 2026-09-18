@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.16.0 — Flim: cinema-grade frames for a scene you describe
+
+Asked whether flim.ai has an API for pimpmyreels. It publishes none, but its web app
+talks to `api-elysia-prod.flim.ai/2.1.0/search`, and that endpoint answers a plain client
+with no session: measured, 200 and 100 results, each with the film's title, director
+and year, a 720p frame on S3, and a machine-written caption of what is in the frame.
+The request schema was read from the app's JavaScript rather than guessed.
+
+- **`--engine flim`**: semantic search over ~2.1M film and series frames, filtered to
+  close-up and medium shots and to films/series (ads and music videos out) — the two
+  filters ARE the editorial rules. "man alone under a single lamp, head in hands" returns
+  One Hour Photo, Le Doulos (1963) and Doctor Mack: real cinema, zero stock.
+- **Describe a scene -> flim; name an iconic one -> ddg.** Flim is a visual index, not a
+  title index: it finds The Matrix for "Morpheus offering the red and blue pills" but not
+  Rain Man's casino, Rocky's steps or Amélie's blind man. `brief.py` documents the split
+  and applies the six-word visual-query rule to every `flim` beat.
+- Captions are written to `candidates/<beat>/flim.json` next to the files, so the
+  look-and-name step can check what Flim says a frame contains.
+- Limits, measured: only 720p is served (larger variants 403) — fine for a 443px
+  cutaway, under a mode-2 background; and this is an undocumented internal API whose
+  app sends a `feature-flag: blockVisitors` header. Used like a free user of the app
+  would: a few results per beat, cached, never hammered.
+
 ## 0.15.0 — describe the photograph, not the concept
 
 Asked to reach Pinterest, the honest measurement came back negative on every automated

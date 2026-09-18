@@ -18,6 +18,11 @@ two steps a good editor does in their head before touching a search box:
             silhouettes, portraits of strangers, generic objects.
   refs   -> the cultural references CONSIDERED for this beat, even when a photo wins.
             An editor with no references in mind ships stock.
+  engine -> ddg for a NAMED iconic scene (title + actor + moment: Rain Man's casino,
+            Rocky's steps); flim for a scene you DESCRIBE and want in cinema grade —
+            Flim is a semantic index of 2.1M film frames with close-up/medium filters,
+            it finds "a man alone under a single lamp" (Le Doulos, One Hour Photo) but
+            not "Rocky at the top of the steps"; unsplash for photography.
 
 Commands
   init     writes brief.json from segments.json: one beat per sentence, fields empty
@@ -123,7 +128,7 @@ def cmd_check(proj):
         elif q.lower() == scene.lower():
             errs.append(f'{tag}: query is a copy of scene — the query is what the ENGINE '
                         f'needs (film title + actor + moment; or subject + action + framing)')
-        elif reg not in CULTURE and len(q.split()) < 6:
+        elif (reg not in CULTURE or b.get('engine') == 'flim') and len(q.split()) < 6:
             # MEASURED, and it is the single biggest quality lever found so far.
             # "simulation" returns a Penrose triangle and two VR headsets. "face with
             # glowing code projected onto skin, dark blue light, extreme close up"

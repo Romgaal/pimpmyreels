@@ -87,7 +87,7 @@ python3 scripts/brief.py init ~/pimpmyreels/<name>     # one beat per sentence, 
 | `register` | `film` `meme` `gif` `icon` `photo` `graphic` | culture (`film`+`meme`+`gif`+`icon`) outside **50–85 %**; `graphic` over 20 % |
 | `refs` | the film / series / meme / artwork you **considered**, even when a photo wins | empty — an editor with no reference in mind ships stock |
 | `query` | what the **engine** needs. Film: title + actor + moment. Everything else: **a description of the PHOTOGRAPH** — subject + action + light + framing, six words minimum | a copy of `scene`; a bare concept noun (refused under 6 words) |
-| `engine` | `ddg` for films/memes/gifs, `unsplash` for photos, `wikimedia` for icons | — |
+| `engine` | `ddg` for a **named** iconic scene (title + actor + moment); **`flim`** for a scene you **describe** and want in cinema grade; `unsplash` for photography; `wikimedia` for icons | a `flim` query under six words |
 
 **Describe the photograph, never name the concept.** A stock engine matches words in
 captions, so `simulation` returns a Penrose triangle and two VR headsets, while `face
@@ -134,8 +134,17 @@ python3 scripts/source_images.py --query "<title actor moment>" --concept <tag> 
   --out ~/pimpmyreels/<name>/candidates/07-<slug>/ --candidates 3 --engine ddg
 ```
 
-Engines, measured: **DuckDuckGo** returns real stills for films Bing gets wrong (Rain
-Man, A Beautiful Mind, Inside Out) and indexes Tenor — first choice for films, memes and
+Engines, measured: **Flim** (`--engine flim`) is a semantic index of ~2.1M film and
+series frames, filtered here to close-up and medium shots, each frame carrying its title,
+year and a caption of what is in it. "man alone under a single lamp, head in hands"
+returns One Hour Photo, Le Doulos (1963) and Doctor Mack — real cinema, zero stock.
+It is a VISUAL index, not a title index: it finds The Matrix for "Morpheus offering the
+red and blue pills" but not Rain Man's casino or Rocky's steps. So: **describe a scene ->
+flim; name an iconic one -> ddg.** Its captions land in `candidates/<beat>/flim.json`
+— read them when writing `shows`. Only 720p is served: fine for a cutaway, under what a
+mode-2 background needs. Undocumented internal API, use it like a free user of the app
+would. **DuckDuckGo** returns real stills for films Bing gets wrong (Rain Man, A
+Beautiful Mind, Inside Out) and indexes Tenor — first choice for named scenes, memes and
 gifs. **Unsplash** for design photography (50 req/h). **Wikimedia** for historical
 figures and artworks. **Bing** as fallback. `--bank-max 0` keeps every reel fresh;
 `--format landscape` only for a wide meme gif whose text a square crop would amputate.

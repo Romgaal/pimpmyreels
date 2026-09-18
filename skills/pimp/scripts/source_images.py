@@ -112,6 +112,69 @@ def engine_ddg(q, gif=False, fmt='square'):
         return []
 
 
+def engine_flim(q, gif=False, fmt='square'):
+    """Flim (app.flim.ai) — semantic search over ~2.1M film, series and ad frames.
+
+    The cinema source this tool always needed. Flim publishes no API, but its web app
+    talks to api-elysia-prod.flim.ai and that endpoint answers a plain client with no
+    session at all: measured, POST /2.1.0/search -> 200, 100 results, each with the
+    film's title, director and year, an hd_720px frame on S3, and a machine-written
+    CAPTION of what is in the frame. "man alone under a single lamp in a dark room"
+    returned Take Shelter and Maestro, captioned exactly so. The schema was read off the
+    app's JavaScript (chunk b06e64a4dec3aa35.js, `initialSearchQuery`), not guessed.
+
+    Two filters map straight onto the editorial rules: shot_types Close Up / Medium is
+    the "close-ups and medium shots only" rule, movie_types MOVIES / TVSERIES keeps ads
+    and music videos out. Only hd_720px is served (larger variants 403) — plenty for a
+    443px cutaway, under the 1000px a full-frame mode-2 background needs.
+
+    This is an undocumented internal API, not a supported one. The app sends a
+    `feature-flag: blockVisitors` header, which reads like a gate they can close. Use
+    it the way a free user of the app would: a handful of results per beat, cached,
+    never hammered. Captions are written next to the candidates as flim.json so the
+    pick sheet can show what Flim says the frame contains.
+    """
+    body = {"search": {"saved_images": False, "full_text": q, "similar_picture_id": "",
+                       "movie_id": "", "dop": "", "director": "", "brand": "", "agency": "",
+                       "production_company": "", "actor": "", "creator": "", "artist": "",
+                       "collection_id": "", "board_id": "",
+                       "filters": {"genres": [], "colors": [], "number_of_persons": [],
+                                   "years": [], "shot_types": ["Close Up", "Medium"],
+                                   "movie_types": ["MOVIES", "TVSERIES", "TVEPISODES"],
+                                   "aspect_ratio": [], "safety_content": [],
+                                   "has_video_cuts": False, "camera_motions": []},
+                       "negative_filters": {"aspect_ratio": [], "genres": [], "movie_types": [],
+                                            "colors": [], "shot_types": [], "number_of_persons": [],
+                                            "years": [], "safety_content": ["nudity", "violence"]}},
+            "page": 0, "sort_by": "", "order_by": ""}
+    try:
+        req = urllib.request.Request(
+            'https://api-elysia-prod.flim.ai/2.1.0/search', data=json.dumps(body).encode(),
+            headers={**UA, 'Origin': 'https://app.flim.ai',
+                     'Referer': 'https://app.flim.ai/', 'Accept': 'application/json',
+                     'Content-Type': 'application/json'}, method='POST')
+        js = json.loads(urllib.request.urlopen(req, timeout=30).read())
+        images = (js.get('query_response') or {}).get('images') or []
+    except Exception as e:
+        print(f'  flim: search failed ({type(e).__name__}) — the endpoint is undocumented '
+              f'and may have been gated; fall back to --engine ddg for this beat.', file=sys.stderr)
+        return []
+    urls, meta = [], {}
+    for im in images:
+        u = im.get('medium_resolution_url')
+        if not u:
+            continue
+        urls.append(u)
+        meta[u] = {'title': im.get('title', ''), 'year': im.get('year', ''),
+                   'directors': im.get('directors', []), 'caption': im.get('caption', ''),
+                   'shot_ratio': im.get('shot_ratio', ''), 'flim_id': im.get('id', '')}
+    engine_flim.last_meta = meta
+    return urls[:40]
+
+
+engine_flim.last_meta = {}
+
+
 def engine_pinboard(q, gif=False, fmt='square'):
     """The user's OWN synced Pinterest boards — see scripts/pinboard.py.
 
@@ -323,6 +386,7 @@ def scrape(q, out, n, gif, fmt='square', engine='auto'):
         'wikimedia': (engine_wikimedia,),
         'pinterest': (engine_pinterest,),
         'pinboard': (engine_pinboard,),
+        'flim': (engine_flim,),
     }.get(engine, (engine_bing, engine_ddg, engine_openverse))
     for eng in engines:
         if len(got) >= n:
@@ -376,8 +440,11 @@ if __name__ == '__main__':
                          '(mode-2 backgrounds) — drives the aspect filter (default square)')
     ap.add_argument('--engine',
                     choices=['auto', 'unsplash', 'ddg', 'openverse', 'wikimedia',
-                             'pinterest', 'pinboard'], default='auto',
-                    help='auto: bing + duckduckgo + openverse (film stills, memes, documentary); '
+                             'pinterest', 'pinboard', 'flim'], default='auto',
+                    help='flim: SEMANTIC search over 2.1M film/series frames, close-up and '
+                         'medium shots only, with a caption per frame — first choice for a '
+                         'film beat described as a scene; '
+                         'auto: bing + duckduckgo + openverse (film stills, memes, documentary); '
                          'unsplash: design photography (needs UNSPLASH_ACCESS_KEY); '
                          'ddg: best for gifs (indexes Tenor/GifDB); '
                          'pinboard: YOUR OWN synced Pinterest boards (scripts/pinboard.py) '
@@ -409,4 +476,16 @@ if __name__ == '__main__':
                 break
             if extra.get('hash') not in have:
                 res.append(extra)
+    # Flim describes every frame it returns; keep that next to the files so the pick
+    # sheet can show what Flim says a candidate contains, and so the film's title and
+    # year are never lost between sourcing and the brief.
+    meta = getattr(engine_flim, 'last_meta', {})
+    if meta:
+        side = {}
+        for r in res:
+            u = r.get('url') or r.get('source') or ''
+            if u in meta:
+                side[os.path.basename(r['path'])] = meta[u]
+        if side:
+            json.dump(side, open(os.path.join(a.out, 'flim.json'), 'w'), indent=1, ensure_ascii=False)
     print(json.dumps(res, indent=1))
